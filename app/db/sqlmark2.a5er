@@ -1,0 +1,115 @@
+﻿# A5:ER FORMAT:16
+# A5:ER ENCODING:UTF8
+# A5:ER Mk-1 Copyright © 2007 m.matsubara
+# A5:SQL Mk-2 Version 2.17.4 Copyright © 1997 - 2022 m.matsubara
+#  https://a5m2.mmatsubara.com
+
+[Manager]
+ProjectName=
+Author=
+MaxEntityRowShow=1000
+ReadOnlyRecommend=0
+Page=Main
+PageInfo="Main",5,"A3Landscape",$FFFFFF
+Domain=sqlite_varchar=TEXT
+DomainInfo="sqlite_varchar","TEXT","",""
+Domain=sqlite_int=INTEGER
+DomainInfo="sqlite_int","INTEGER","",""
+LogicalView=1
+DecodeDomain=0
+ViewModePageIndividually=1
+ViewMode=5
+ViewFormat=0
+UseNondependenceDashLine=0
+FontName=Tahoma
+FontSize=6
+PaperSize=A4Landscape
+HeaderLeft=
+HeaderCenter=
+HeaderRight=
+FooterLeft=
+FooterCenter=
+FooterRight=
+ShowPageoutRelation=1
+RDBMSTypeName=Oracle Database
+GenerateDropTableStatement=1
+DropTableIfExists=0
+DefaultPkName=%0:s_PKC
+DefaultPkIndexName=%0:s_PKI
+DefaultIndexName=%0:s_IX%1:d
+DefaultFkName=%0:s_FK%1:d
+SqlSeparator=0
+UpperCaseKeyword=0
+ShowTag=1
+ShowCommonAttributes=0
+BugFixEntityWidth=1
+
+[Entity]
+PName=user
+LName=user
+Comment=
+TableOption=
+Page=MAIN
+Left=350
+Top=50
+Field="id","id","INTEGER",,0,"","",$FFFFFFFF,""
+Field="name","name","TEXT",,,"","",$FFFFFFFF,""
+Field="age","age","INTEGER",,,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="MAIN",350,50
+ZOrder=-2
+
+[Entity]
+PName=sqlite_sequence
+LName=sqlite_sequence
+Comment=
+TableOption=
+Page=MAIN
+Left=50
+Top=50
+Field="name","name","",,,"","",$FFFFFFFF,""
+Field="seq","seq","",,,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+Position="MAIN",50,50
+ZOrder=-1
+
+[Entity]
+PName=seat_master
+LName=座席マスタ
+Comment=
+TableOption=
+Page=MAIN
+Left=50
+Top=150
+Field="座席ID","seat_id","*sqlite_int","NOT NULL",0,"","",$FFFFFFFF,""
+Field="座席名","seat_name","*sqlite_varchar",,,"","",$FFFFFFFF,""
+Field="緯度","lat","*sqlite_int","NOT NULL",,"","",$FFFFFFFF,""
+Field="経度","lng","*sqlite_int","NOT NULL",,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20230504173059
+Position="MAIN",50,150,326,134
+ZOrder=1
+
+[Entity]
+PName=seat_info
+LName=座席情報
+Comment=
+TableOption=
+Page=MAIN
+Left=550
+Top=150
+Field="座席ID","seat_id","*sqlite_int","NOT NULL",0,"","",$FFFFFFFF,""
+Field="座席日時","seat_date","*sqlite_varchar","NOT NULL",1,"","",$FFFFFFFF,""
+Field="使用者名","user_name","*sqlite_varchar",,,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20230504193555
+Position="MAIN",550,150
+ZOrder=2
