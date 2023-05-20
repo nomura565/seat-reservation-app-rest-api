@@ -76,42 +76,6 @@ class SeatModel {
         return seats;
       });
   }
-  
-  /**
-   * ID を指定して1件検索する
-   * 
-   * @param id ID
-   * @return Entity を Resolve する
-   */
-  findById(seat_id, seat_date) {
-    const sql = `
-      SELECT
-        m.*
-        ,i.seat_date
-        ,i.user_name
-      FROM
-        seat_master m 
-        left join  (select * from seat_info where seat_date=$seat_date) i
-        on m.seat_id = i.seat_id
-      WHERE
-      m.seat_id = $seat_id
-    `;
-    const params = {
-      $seat_date: seat_date,
-      $seat_id:seat_id
-    };
-    
-    return this.model.findOne(sql, params)
-      .then((row) => {
-        return new SeatEntity(
-          row.seat_id, 
-          row.seat_name, 
-          row.lat,
-          row.lng,
-          row.seat_date,
-          row.user_name);
-      });
-  }
 
   /**
    * seat_date を指定して複数件検索する
@@ -183,33 +147,6 @@ class SeatModel {
         // 登録したデータを返却する
         //return this.findById(seat_info.seat_id, seat_info.seat_date);
       });
-  }
-  
-  /**
-   * 登録 or 更新する
-   * 
-   * @param user 更新情報を持つ Entity
-   * @return 登録 or 更新できたら Resolve する
-   */
-  update(seat_info) {
-    const sql = `
-      REPLACE INTO seat_info (
-        seat_id,
-        seat_date,
-        user_name
-      ) VALUES (
-        $seat_id,
-        $seat_date,
-        $user_name
-      )
-    `;
-    const params = {
-      $seat_id  : seat_info.seat_id,
-      $seat_date: seat_info.seat_date,
-      $user_name : seat_info.user_name
-    };
-    
-    return this.model.run(sql, params);
   }
   
   /**

@@ -47,20 +47,6 @@ class SeatsController {
       .then(this.controller.findSuccess(res))
       .catch(this.controller.findError(res));
   }
-  
-  /**
-   * ID を指定して1件取得する
-   * 
-   * @param req リクエスト
-   * @param res レスポンス
-   */
-  findById(req, res) {
-    const id = req.params.id;
-    
-    this.seatModel.findById(id)
-      .then(this.controller.findSuccess(res))
-      .catch(this.controller.findError(res));
-  }
 
    /**
    * seat_date を指定して複数件取得する
@@ -111,24 +97,6 @@ class SeatsController {
       this.controller.createSuccess(res);
     };
     main();
-  }
-  
-  /**
-   * 登録 or 更新する
-   * 
-   * @param req リクエスト
-   * @param res レスポンス
-   */
-  update(req, res) {
-    const seat = new SeatEntity();
-    // user.id = req.body.id;
-    seat.seat_id = req.body.seat_id;
-    seat.seat_date = req.body.seat_date;
-    seat.user_name = req.body.user_name;
-    
-    this.seatModel.update(seat)
-      .then(this.controller.editSuccess(res))
-      .catch(this.controller.editError(res));
   }
   
   /**

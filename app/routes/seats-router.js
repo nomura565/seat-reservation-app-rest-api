@@ -17,11 +17,6 @@ router.get('/', (req, res) => {
   seatsController.findAll(res);
 });
 
-// ID を指定して1件取得
-router.get('/:id', (req, res) => {
-  seatsController.findById(req, res);
-});
-
 // SeatDate を指定して複数件取得
 router.post('/select', (req, res) => {
   seatsController.findBySeatDate(req, res);
@@ -30,11 +25,6 @@ router.post('/select', (req, res) => {
 // 登録
 router.post('/insert', (req, res) => {
   seatsController.create(req, res);
-});
-
-// 更新
-router.put('/:id', (req, res) => {
-  seatsController.update(req, res);
 });
 
 // 削除

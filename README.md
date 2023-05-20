@@ -1,7 +1,6 @@
-# node-js-rest-api-sqlite-db : Node.js + Express + REST API + SQLite DB Example.
+# seat-reservation-app-rest-apiからのリクエストを受け取るREST-API
 
-Express で REST API を構築し、SQLite でデータ永続化を実現した、Node.js オンリーで作った Web API サーバのデモ。
-
+seat-reservation-app-rest-apiからのリクエストを受け取るREST-API。
 
 ## 使い方
 
@@ -12,25 +11,20 @@ $ npm start
 サーバ起動 : http://localhost:3000/
 ```
 
-サンプルとして、ユーザ情報を扱う `Users` という API を用意している。それぞれ、以下のメソッド・URL を指定して参照・操作できる。
-
-| 機能                 | メソッド | URL                                 |
-|----------------------|----------|-------------------------------------|
-| 全件取得             | GET      | `http://localhost:3000/api/users/`  |
-| ID を指定して1件取得 | GET      | `http://localhost:3000/api/users/1` |
-| 新規登録             | POST     | `http://localhost:3000/api/users/`  |
-| ID を指定して更新    | PUT      | `http://localhost:3000/api/users/1` |
-| ID を指定して削除    | DELETE   | `http://localhost:3000/api/users/1` |
-
-`./test/` 配下の各ファイルはこれらの API を叩く Node.js スクリプトなので、`$ npm start` でサーバ起動後、`$ node ./test/user-find-all-test.js` というように実行してみてほしい。
-
+| 機能 | メソッド | URL |
+|---|---|---|
+| フロアマスタ全件取得                | GET      | `http://localhost:3000/api/seats/floor`  |
+| 座席情報全件取得(APIテスト用)       | GET      | `http://localhost:3000/api/seats/`       |
+| 年月日,フロアID を指定して複数件取得 | POST     | `http://localhost:3000/api/seats/select` |
+| 座席情報登録                       | POST     | `http://localhost:3000/api/seats/insert` |
+| 座席情報削除                       | DELETE   | `http://localhost:3000/api/seats/delete` |
 
 ## 構造
 
 ディレクトリ構成は以下のとおり。
 
 ```
-node-js-rest-api-sqlite-db/
+seat-reservation-app-rest-api/
 ├ README.md                    説明ファイル
 ├ package.json                 利用する npm パッケージなどの情報
 ├ index.js                     エントリポイント。サーバの起動と DB の準備を行う
@@ -38,41 +32,41 @@ node-js-rest-api-sqlite-db/
 │ ├ db/                       DB (SQLite) 関連のファイルを置くディレクトリ
 │ │ ├ db.js                  DB ファイルの生成とテーブル定義の準備を行う
 │ │ └ sqlite3-database.db    サーバを起動すると db.js により生成される
+│ │ └ sqlmark2.a5er          DB情報＋ER図
 │ ├ routes/                   ルータ関連のディレクトリ
 │ │ ├ router.js              API 別のルータの登録などを行うベースルータ
-│ │ └ users-router.js        Users に関するルーティングの定義
+│ │ └ seats-router.js        Seats に関するルーティングの定義
 │ ├ controllers/              ルータから呼ばれるコントローラクラスを置くディレクトリ
 │ │ ├ controller.js          各コントローラクラスで共通的に利用する処理をまとめたクラス
-│ │ └ users-controller.js    Users に関するコントローラ
+│ │ └ seats-controller.js    Seats に関するコントローラ
 │ ├ models/                   DB 接続を行うクラス (DAO) を置くディレクトリ
 │ │ ├ model.js               各モデルクラスで共通的に利用する処理をまとめたクラス
 │ │ ├ model-error.js         DB 操作時のエラー情報を保持するためのオブジェクト
-│ │ └ user-model.js          Users に関するモデル
+│ │ └ seat-model.js          Seats に関するモデル
 │ └ entities/                 コントローラ・モデル間でデータをやり取りする際のクラス (DTO) を置くディレクトリ
-│    └ user-entity.js         Users に関するエンティティ
-└ test/                        サーバにリクエストを投げてテストするための Node.js スクリプト
-   ├ user-find-all-test.js     Users の全件取得を行う
-   ├ user-find-by-id-test.js   Users の ID を指定して1件取得を行う
-   ├ user-create-test.js       Users にデータを新規登録する
-   ├ user-update-test.js       Users のデータを更新する
-   └ user-delete-test.js       Users のデータを削除する
+│    └ floor-entity.js         Floor に関するエンティティ
+│    └ seat-entity.js         Seats に関するエンティティ
 ```
 
 `index.js` がエントリポイント。サーバを起動し、`db.js` にDB ファイルを用意させ、`router.js` を呼び出してルーティングの定義を行わせる。
 
 特定の URL にアクセスすると、Router から Controller が呼び出される。Controller でリクエスト情報が整理され、DB 操作を行う Model クラスが呼び出される。Controller と Model 間のデータやり取りのために、Entity クラスを利用している。
 
-`Users` 以外の API を作る場合は、
+## DB構造
 
-- `db.js` … `CREATE TABLE` 文の追加
-- Router … API 別のルータの作成と `router.js` への追加
-- Controller … 共通処理は `controller.js` を利用
-- Model … 共通処理は `model.js` を利用
-- Entity
+| 論理名 | 物理名 | 説明 |
+|---|---|---|
+| フロアマスタ    | floor_master      | フロア（オフィス）のマスタテーブル  |
+| 座席情報        | seat_info      | 座席の情報テーブル　座席マスタと座席IDで1:Nで紐づく　フロアと座席日付で絞り込むと一意になる  |
+| 座席マスタ      | seat_master      | 座席のマスタテーブル  |
 
-を用意することで、`Users` と同じように動作させられる。
+## フロアの追加手順
 
+- フロアマスタで新規行を追加
+- office.pngと同じサイズのフロア画像を用意する
+- seat-reservation-app-front/publicに配置する
 
-## Links
+## 座席の追加手順
 
-- [Neo's World](https://neos21.net/)
+- seat-reservation-app-front/を起動し、追加したい箇所をクリックする
+- コンソールに緯度、経度が出力されるので座席情報に追加する
