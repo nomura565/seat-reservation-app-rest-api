@@ -5,6 +5,16 @@ const ModelError = require('./model-error');
  * Model : 共通処理
  */
 class Model {
+
+  BeginTransaction() {
+    db.exec('BEGIN TRANSACTION');
+  }
+  Commit() {
+    db.exec('COMMIT');
+  }
+  Rollback() {
+    db.exec('ROLLBACK');
+  }
   /**
    * 全件取得する
    * 

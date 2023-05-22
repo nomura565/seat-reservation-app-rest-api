@@ -70,33 +70,54 @@ class SeatsController {
    * @param res レスポンス
    */
   create(req, res) {
+    let result = true;
+    this.seatModel.model.BeginTransaction();
     const main = async () => {
-      let from_date = req.body.from_date;
-      let to_date = req.body.to_date;
+      return new Promise(async (resolve, reject) => {
+        let from_date = req.body.from_date;
+        let to_date = req.body.to_date;
 
-      let from_p = parse(from_date, "yyyy/MM/dd", new Date());
-      let p = Promise.resolve();
-      while(true){
-        const seat = new SeatEntity();
-        // user.id = req.body.id;
-        seat.seat_id = req.body.seat_id;
-        seat.seat_date = from_date;
-        seat.user_name = req.body.user_name;
-        
-        
-        this.seatModel.create(seat)
-          .then(this.controller.createSuccess(res))
-          .catch(this.controller.editError(res));
-        if (from_date == to_date){
-          break;
+        let from_p = parse(from_date, "yyyy/MM/dd", new Date());
+
+        while(true){
+          const seat = new SeatEntity();
+          // user.id = req.body.id;
+          seat.seat_id = req.body.seat_id;
+          seat.seat_date = from_date;
+          seat.user_name = req.body.user_name;
+          
+          
+          await this.seatModel.create(seat)
+            .then(
+            )
+            .catch((error) => {
+                result = false;
+                reject(error);
+              }
+            );
+          if (!result){
+            break;
+          }
+          if (from_date == to_date){
+            resolve();
+            break;
+          }
+          from_p.setDate(from_p.getDate() + 1);
+          from_date = formatDate(from_p);
         }
-        from_p.setDate(from_p.getDate() + 1);
-        from_date = formatDate(from_p);
-      }
-      await p;
-      this.controller.createSuccess(res);
+      });
     };
-    main();
+    main()
+      .then(() => {
+        this.seatModel.model.Commit();
+        return this.controller.createSuccess(res)();
+        }
+      )
+      .catch((error) => {
+        this.seatModel.model.Rollback();
+        return this.controller.editError(res)();
+        }
+      );
   }
   
   /**
