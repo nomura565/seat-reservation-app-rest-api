@@ -1,24 +1,17 @@
 {
-  "name": "node-js-rest-api-sqlite-db",
+  "name": "seat-reservation-app-rest-api",
   "version": "1.0.0",
   "description": "Node.js + Express + REST API + SQLite DB Example",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Neo <neos21@gmail.com> (https://neos21.net/)",
+  "author": "Yusuke Nomura",
   "license": "MIT",
-  "homepage": "https://github.com/Neos21/node-js-rest-api-sqlite-db#readme",
+  "homepage": "https://github.com/nomura565/seat-reservation-app-rest-api",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Neos21/node-js-rest-api-sqlite-db.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Neos21/node-js-rest-api-sqlite-db/issues"
-  },
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/Neos21"
+    "url": "git+https://github.com/nomura565/seat-reservation-app-rest-api.git"
   },
   "dependencies": {
     "body-parser": "1.18.2",
