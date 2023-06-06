@@ -114,6 +114,33 @@ class Model {
       });
     });
   }
+
+  /**
+   * パラメータを指定して更新系処理を実行する
+   * 
+   * @param sql SQL 文
+   * @param params パラメータ
+   * @return 1件追加・更新・削除したら Resolve する。結果が0件でも Reject しない
+   */
+  run2(sql, params) {
+    return new Promise((resolve, reject) => {
+      const stmt = db.prepare(sql);
+      
+      // bind() して this を書き換えているのでアロー関数を使わない
+      stmt.run(params, function(error) {
+        if(this.changes === 1) {
+          // lastID は INSERT 時のみ ID を返す
+          resolve(this.lastID);
+        }
+        else if(this.changes === 0) {
+          resolve(this.lastID);
+        }
+        else {
+          resolve(this.lastID);
+        }
+      });
+    });
+  }
 }
 
 module.exports = Model;

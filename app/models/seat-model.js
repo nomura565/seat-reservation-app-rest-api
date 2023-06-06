@@ -91,7 +91,7 @@ class SeatModel {
         ,i.user_name
       FROM
         (select * from seat_master where floor_id = $floor_id) m 
-        left join  (select * from seat_info where seat_date=$seat_date) i
+        left join  (select * from seat_info where seat_date=$seat_date OR seat_date="XXXX/XX/XX") i
         on m.seat_id = i.seat_id
     `;
     const params = {
@@ -162,7 +162,7 @@ class SeatModel {
         seat_info
       WHERE
         seat_id = $seat_id
-        AND seat_date = $seat_date
+        AND (seat_date = $seat_date OR seat_date = "XXXX/XX/XX")
     `;
     const params = {
       $seat_id: seat_id,
@@ -170,6 +170,27 @@ class SeatModel {
     };
     
     return this.model.run(sql, params);
+  }
+
+  /**
+   * 削除する
+   * 
+   * @param seat_id seat_id
+   * @param seat_date seat_date
+   * @return 削除できたら Resolve する
+   */
+  deleteAllSeatId(seat_id) {
+    const sql = `
+      DELETE FROM
+        seat_info
+      WHERE
+        seat_id = $seat_id
+    `;
+    const params = {
+      $seat_id: seat_id
+    };
+    
+    return this.model.run2(sql, params);
   }
 }
 

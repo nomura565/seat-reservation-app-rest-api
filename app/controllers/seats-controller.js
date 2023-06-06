@@ -76,14 +76,19 @@ class SeatsController {
       return new Promise(async (resolve, reject) => {
         let from_date = req.body.from_date;
         let to_date = req.body.to_date;
+        let permanent_flg = req.body.permanent_flg;
 
         let from_p = parse(from_date, "yyyy/MM/dd", new Date());
+
+        if(permanent_flg){
+          await this.seatModel.deleteAllSeatId(req.body.seat_id);
+        }
 
         while(true){
           const seat = new SeatEntity();
           // user.id = req.body.id;
           seat.seat_id = req.body.seat_id;
-          seat.seat_date = from_date;
+          seat.seat_date = (permanent_flg)? "XXXX/XX/XX" : from_date;
           seat.user_name = req.body.user_name;
           
           
@@ -98,7 +103,7 @@ class SeatsController {
           if (!result){
             break;
           }
-          if (from_date == to_date){
+          if ((from_date == to_date) || permanent_flg){
             resolve();
             break;
           }
