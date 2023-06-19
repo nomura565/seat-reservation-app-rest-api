@@ -1,7 +1,7 @@
-﻿# A5:ER FORMAT:16
+﻿# A5:ER FORMAT:17
 # A5:ER ENCODING:UTF8
 # A5:ER Mk-1 Copyright © 2007 m.matsubara
-# A5:SQL Mk-2 Version 2.17.4 Copyright © 1997 - 2022 m.matsubara
+# A5:SQL Mk-2 Version 2.18.2 Copyright © 1997 - 2023 m.matsubara
 #  https://a5m2.mmatsubara.com
 
 [Manager]
@@ -89,10 +89,11 @@ Field="座席ID","seat_id","*sqlite_int","NOT NULL",0,"","",$FFFFFFFF,""
 Field="座席名","seat_name","*sqlite_varchar",,,"","",$FFFFFFFF,""
 Field="緯度","lat","*sqlite_int","NOT NULL",,"","",$FFFFFFFF,""
 Field="経度","lng","*sqlite_int","NOT NULL",,"","",$FFFFFFFF,""
+Field="ツールチップの開く方向","tooltip_direction","*sqlite_varchar",,,"","",$FFFFFFFF,""
 EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
-ModifiedDateTime=20230504173059
+ModifiedDateTime=20230617202224
 Position="MAIN",50,150,326,134
 ZOrder=1
 

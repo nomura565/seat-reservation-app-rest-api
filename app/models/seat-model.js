@@ -109,6 +109,7 @@ class SeatModel {
               row.seat_name, 
               row.lat,
               row.lng,
+              row.tooltip_direction,
               row.seat_date,
               row.user_name));
         }
