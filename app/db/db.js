@@ -16,6 +16,7 @@ const init = () => {
       , seat_name TEXT
       , lat INTEGER not null
       , lng INTEGER not null
+      , tooltip_direction TEXT
     );
     CREATE TABLE IF NOT EXISTS seat_info (
       seat_id INTEGER not null
