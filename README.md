@@ -18,6 +18,7 @@ $ npm start
 | 年月日,フロアID を指定して複数件取得 | POST     | `http://localhost:3000/api/seats/select` |
 | 座席情報登録                       | POST     | `http://localhost:3000/api/seats/insert` |
 | 座席情報削除                       | DELETE   | `http://localhost:3000/api/seats/delete` |
+| 座席情報更新                       | POST   | `http://localhost:3000/api/seats/update` |
 
 ## 構造
 
@@ -68,5 +69,6 @@ seat-reservation-app-rest-api/
 
 ## 座席の追加手順
 
-- seat-reservation-app-front/を起動し、追加したい箇所をクリックする
-- コンソールに緯度、経度が出力されるので座席情報に追加する
+- ~~seat-reservation-app-front/を起動し、追加したい箇所をクリックする~~
+- ~~コンソールに緯度、経度が出力されるので座席情報に追加する~~
+- http://localhost:3000/?admin=trueにアクセスすると座席位置更新モードになるのでそこから更新する

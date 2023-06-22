@@ -177,7 +177,6 @@ class SeatModel {
    * 削除する
    * 
    * @param seat_id seat_id
-   * @param seat_date seat_date
    * @return 削除できたら Resolve する
    */
   deleteAllSeatId(seat_id) {
@@ -193,6 +192,121 @@ class SeatModel {
     
     return this.model.run2(sql, params);
   }
+
+   /**
+   * 更新する
+   * 
+   * @param seat_info 登録情報を持つ Entity
+   * @return 登録できたら Resolve する
+   */
+   update(seat_info) {
+    const sql = `
+      UPDATE seat_master SET
+        lat = $lat,
+        lng = $lng
+      WHERE seat_id = $seat_id
+    `;
+    const params = {
+      $seat_id: seat_info.seat_id,
+      $lat: seat_info.lat,
+      $lng : seat_info.lng
+    };
+    
+    return this.model.run(sql, params)
+      .then((id) => {
+        // 登録したデータを返却する
+        //return this.findById(seat_info.seat_id, seat_info.seat_date);
+      });
+  }
+     /**
+   * 登録する
+   * 
+   * @param seat_info 登録情報を持つ Entity
+   * @return 登録できたら Resolve する
+   */
+     insert(seat_info, floor_id) {
+      let temp_sql = "";
+      let temp_params = {};
+      let temp_seat_id = String(seat_info.seat_id);
+
+      if(temp_seat_id.indexOf("追加") >= 0){
+        temp_sql = `
+          INSERT INTO seat_master (
+            seat_id,
+            lat,
+            lng,
+            floor_id,
+            seat_name,
+            tooltip_direction
+          ) VALUES (
+              (SELECT MAX(coalesce(seat_id, 0))+1 FROM seat_master) ,
+              $lat,
+              $lng,
+              $floor_id,
+              $seat_name,
+              $tooltip_direction
+          )
+        `;
+        temp_params = {
+          $lat: seat_info.lat,
+          $lng : seat_info.lng,
+          $floor_id : floor_id,
+          $seat_name : seat_info.seat_name,
+          $tooltip_direction : seat_info.tooltip_direction
+        };
+      }else{
+        temp_sql = `
+          INSERT INTO seat_master (
+            seat_id,
+            lat,
+            lng,
+            floor_id,
+            seat_name,
+            tooltip_direction
+          ) VALUES (
+              $seat_id,
+              $lat,
+              $lng,
+              $floor_id,
+              $seat_name,
+              $tooltip_direction
+          )
+        `;
+        temp_params = {
+          $seat_id: seat_info.seat_id,
+          $lat: seat_info.lat,
+          $lng : seat_info.lng,
+          $floor_id : floor_id,
+          $seat_name : seat_info.seat_name,
+          $tooltip_direction : seat_info.tooltip_direction
+        };
+      }
+      
+      return this.model.run(temp_sql, temp_params)
+        .then((id) => {
+          // 登録したデータを返却する
+          //return this.findById(seat_info.seat_id, seat_info.seat_date);
+        });
+    }
+    /**
+   * 座席マスタを全件削除する
+   * 
+   * @return 削除できたら Resolve する
+   */
+    deleteAllSeatMaster(floor_id) {
+      const sql = `
+        DELETE FROM
+          seat_master
+        WHERE floor_id = $floor_id
+      `;
+      const params = {
+        $floor_id: floor_id
+      };
+      
+      return this.model.run2(sql, params);
+    }
 }
+
+
 
 module.exports = SeatModel;

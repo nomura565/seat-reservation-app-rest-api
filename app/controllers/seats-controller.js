@@ -147,6 +147,63 @@ class SeatsController {
         }
       });
   }
+
+  /**
+   * 座席マスタを登録、更新する
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+  update(req, res) {
+    let result = true;
+    let seat_list = req.body.seat_list;
+    let floor_id = req.body.floor_id;
+    
+    this.seatModel.model.BeginTransaction();
+    const main = async () => {
+      return new Promise(async (resolve, reject) => {
+
+        await this.seatModel.deleteAllSeatMaster(floor_id);
+        for( var i=0; i<seat_list.length; i++) {
+          const seat = new SeatEntity();
+          // user.id = req.body.id;
+          seat.seat_id = seat_list[i].seat_id;
+          seat.lat = seat_list[i].lat;
+          seat.lng = seat_list[i].lng;
+          seat.seat_name = seat_list[i].seat_name;
+          seat.tooltip_direction = seat_list[i].tooltip_direction;
+
+          await this.seatModel.insert(seat, floor_id)
+            .then(
+            )
+            .catch((error) => {
+                result = false;
+                reject(error);
+              }
+            );
+          
+          if (!result){
+            break;
+          }
+          if (i == seat_list.length - 1){
+            resolve();
+            break;
+          }
+        }
+      });
+    };
+    main()
+      .then(() => {
+        this.seatModel.model.Commit();
+        return this.controller.createSuccess(res)();
+        }
+      )
+      .catch((error) => {
+        this.seatModel.model.Rollback();
+        return this.controller.editError(res)();
+        }
+      );
+  }
 }
 
 module.exports = SeatsController;

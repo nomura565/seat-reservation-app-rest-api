@@ -32,4 +32,9 @@ router.delete('/delete', (req, res) => {
   seatsController.delete(req, res);
 });
 
+// 更新
+router.post('/update', (req, res) => {
+  seatsController.update(req, res);
+});
+
 module.exports = router;
