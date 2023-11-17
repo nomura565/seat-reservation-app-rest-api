@@ -12,8 +12,9 @@ class SeatEntity {
    * @param tooltip_direction ツールチップの開く方向
    * @param seat_date 座席日時
    * @param user_name 使用者名
+   * @param image_data 画像データ（base64）
    */
-  constructor(seat_id, seat_name, lat, lng, tooltip_direction, seat_date, user_name) {
+  constructor(seat_id, seat_name, lat, lng, tooltip_direction, seat_date, user_name, image_data) {
     this.key   = seat_id + "_" + seat_date;
     this.seat_id   = seat_id;
     this.seat_name = seat_name;
@@ -23,6 +24,7 @@ class SeatEntity {
     this.position  = [lat, lng];
     this.seat_date  = seat_date;
     this.user_name  = user_name;
+    this.image_data  = image_data;
   }
 }
 

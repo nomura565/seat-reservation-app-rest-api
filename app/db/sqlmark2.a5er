@@ -1,7 +1,7 @@
 ﻿# A5:ER FORMAT:17
 # A5:ER ENCODING:UTF8
 # A5:ER Mk-1 Copyright © 2007 m.matsubara
-# A5:SQL Mk-2 Version 2.18.2 Copyright © 1997 - 2023 m.matsubara
+# A5:SQL Mk-2 Version 2.18.4 Copyright © 1997 - 2023 m.matsubara
 #  https://a5m2.mmatsubara.com
 
 [Manager]
@@ -108,9 +108,10 @@ Top=150
 Field="座席ID","seat_id","*sqlite_int","NOT NULL",0,"","",$FFFFFFFF,""
 Field="座席日時","seat_date","*sqlite_varchar","NOT NULL",1,"","",$FFFFFFFF,""
 Field="使用者名","user_name","*sqlite_varchar",,,"","",$FFFFFFFF,""
+Field="画像データ","image_data","BLOB",,,"","",$FFFFFFFF,""
 EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
-ModifiedDateTime=20230504193555
+ModifiedDateTime=20231117103201
 Position="MAIN",550,150
 ZOrder=2

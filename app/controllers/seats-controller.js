@@ -90,7 +90,7 @@ class SeatsController {
           seat.seat_id = req.body.seat_id;
           seat.seat_date = (permanent_flg)? "XXXX/XX/XX" : from_date;
           seat.user_name = req.body.user_name;
-          
+          seat.image_data = req.body.image_data;
           
           await this.seatModel.create(seat)
             .then(

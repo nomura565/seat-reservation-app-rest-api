@@ -89,6 +89,7 @@ class SeatModel {
         m.*
         ,i.seat_date
         ,i.user_name
+        ,i.image_data
       FROM
         (select * from seat_master where floor_id = $floor_id) m 
         left join  (select * from seat_info where seat_date=$seat_date OR seat_date="XXXX/XX/XX") i
@@ -111,7 +112,8 @@ class SeatModel {
               row.lng,
               row.tooltip_direction,
               row.seat_date,
-              row.user_name));
+              row.user_name,
+              row.image_data));
         }
         
         return seats;
@@ -130,17 +132,20 @@ class SeatModel {
       INSERT INTO seat_info (
         seat_id,
         seat_date,
-        user_name
+        user_name,
+        image_data
       ) VALUES (
           $seat_id,
           $seat_date,
-          $user_name
+          $user_name,
+          $image_data
       )
     `;
     const params = {
       $seat_id: seat_info.seat_id,
       $seat_date: seat_info.seat_date,
-      $user_name : seat_info.user_name
+      $user_name : seat_info.user_name,
+      $image_data : seat_info.image_data,
     };
     
     return this.model.run(sql, params)
