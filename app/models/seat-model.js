@@ -162,20 +162,24 @@ class SeatModel {
    * @param seat_date seat_date
    * @return 削除できたら Resolve する
    */
-  delete(seat_id, seat_date) {
+  delete(seat_id, seat_date, to_date, user_name) {
     const sql = `
       DELETE FROM
         seat_info
       WHERE
         seat_id = $seat_id
-        AND (seat_date = $seat_date OR seat_date = "XXXX/XX/XX")
+        AND (
+          (seat_date BETWEEN  $seat_date AND $to_date AND user_name = $user_name)
+          OR seat_date = "XXXX/XX/XX")
     `;
     const params = {
       $seat_id: seat_id,
-      $seat_date:seat_date
+      $seat_date:seat_date,
+      $to_date:to_date,
+      $user_name:user_name
     };
     
-    return this.model.run(sql, params);
+    return this.model.run2(sql, params);
   }
 
   /**

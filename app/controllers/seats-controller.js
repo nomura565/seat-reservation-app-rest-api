@@ -134,8 +134,10 @@ class SeatsController {
   delete(req, res) {
     const seat_id = req.body.seat_id;
     const seat_date = req.body.seat_date;
+    const to_date = req.body.to_date;
+    const user_name = req.body.user_name;
     
-    this.seatModel.delete(seat_id, seat_date)
+    this.seatModel.delete(seat_id, seat_date, to_date, user_name)
       .then(this.controller.editSuccess(res))
       .catch((error) => {
         if(error.errorCode === 21) {
