@@ -37,4 +37,9 @@ router.post('/update', (req, res) => {
   seatsController.update(req, res);
 });
 
+// YMと席ID を指定して複数件取得
+router.post('/calendar', (req, res) => {
+  seatsController.calendar(req, res);
+});
+
 module.exports = router;

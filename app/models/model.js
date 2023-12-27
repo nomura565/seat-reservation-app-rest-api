@@ -52,7 +52,7 @@ class Model {
         if(error) {
           reject(new ModelError(11, 'Invalid Arguments'));
         }
-        else if(rows === null || rows.length === 0) {
+        else if(rows === null) {
           reject(new ModelError(21, 'Entity Not Found'));
         }
         else {

@@ -19,6 +19,7 @@ $ npm start
 | 座席情報登録                       | POST     | `http://localhost:3000/api/seats/insert` |
 | 座席情報削除                       | DELETE   | `http://localhost:3000/api/seats/delete` |
 | 座席情報更新                       | POST   | `http://localhost:3000/api/seats/update` |
+| カレンダー一覧取得                 | POST   | `http://localhost:3000/api/seats/calendar` |
 
 ## 構造
 

@@ -206,6 +206,21 @@ class SeatsController {
         }
       );
   }
+
+  /**
+   * YMと席ID を指定して複数件取得
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+  calendar(req, res) {
+    const seat_id = req.body.seat_id;
+    const date_ym = req.body.date_ym;
+    
+    this.seatModel.calendar(seat_id, date_ym)
+      .then(this.controller.findSuccess(res))
+      .catch(this.controller.findError(res));
+  }
 }
 
 module.exports = SeatsController;
