@@ -321,7 +321,7 @@ class SeatModel {
    * @param date_ym 年月 yyyy/MM
    * @return Entity を Resolve する
    */
-  calendar(seat_id, date_ym) {
+  calendar(seat_id, date_ym, date_ym_next, date_ym_prev) {
     const sql = `
       SELECT
         seat_id
@@ -331,14 +331,16 @@ class SeatModel {
         seat_info
       WHERE
         seat_id = $seat_id
-        AND seat_date LIKE $date_ym
+        AND (seat_date LIKE $date_ym OR seat_date LIKE $date_ym_next OR seat_date LIKE $date_ym_prev)
       ORDER BY
         user_name
         ,seat_date
     `;
     const params = {
       $seat_id: seat_id,
-      $date_ym: date_ym + "%"
+      $date_ym: date_ym + "%",
+      $date_ym_next: date_ym_next + "%",
+      $date_ym_prev: date_ym_prev + "%"
     };
 
     return this.model.findSelect(sql, params)

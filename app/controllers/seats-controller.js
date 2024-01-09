@@ -216,8 +216,10 @@ class SeatsController {
   calendar(req, res) {
     const seat_id = req.body.seat_id;
     const date_ym = req.body.date_ym;
+    const date_ym_next = req.body.date_ym_next;
+    const date_ym_prev = req.body.date_ym_prev;
     
-    this.seatModel.calendar(seat_id, date_ym)
+    this.seatModel.calendar(seat_id, date_ym, date_ym_next, date_ym_prev)
       .then(this.controller.findSuccess(res))
       .catch(this.controller.findError(res));
   }
