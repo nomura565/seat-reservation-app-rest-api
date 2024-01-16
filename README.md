@@ -20,6 +20,8 @@ $ npm start
 | 座席情報削除                       | DELETE   | `http://localhost:3000/api/seats/delete` |
 | 座席情報更新                       | POST   | `http://localhost:3000/api/seats/update` |
 | カレンダー一覧取得                 | POST   | `http://localhost:3000/api/seats/calendar` |
+| リプライ一覧取得                   | POST   | `http://localhost:3000/api/seats/replySelect` |
+| リプライ登録                       | POST   | `http://localhost:3000/api/seats/replyInsert` |
 
 ## 構造
 
@@ -47,6 +49,7 @@ seat-reservation-app-rest-api/
 │ │ └ seat-model.js          Seats に関するモデル
 │ └ entities/                 コントローラ・モデル間でデータをやり取りする際のクラス (DTO) を置くディレクトリ
 │    └ floor-entity.js         Floor に関するエンティティ
+│    └ reply-entity.js         Reply に関するエンティティ
 │    └ seat-entity.js         Seats に関するエンティティ
 ```
 
@@ -61,6 +64,7 @@ seat-reservation-app-rest-api/
 | フロアマスタ    | floor_master      | フロア（オフィス）のマスタテーブル  |
 | 座席情報        | seat_info      | 座席の情報テーブル　座席マスタと座席IDで1:Nで紐づく　フロアと座席日付で絞り込むと一意になる  |
 | 座席マスタ      | seat_master      | 座席のマスタテーブル  |
+| リプライ情報    | reply_info       | リプライ情報  |
 
 ## フロアの追加手順
 

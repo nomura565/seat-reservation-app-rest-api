@@ -1,6 +1,7 @@
 const Model = require('./model');
 const SeatEntity = require('../entities/seat-entity');
 const FloorEntity = require('../entities/floor-entity');
+const ReplyEntity = require('../entities/reply-entity');
 
 /**
  * Seat Model
@@ -90,6 +91,7 @@ class SeatModel {
         ,i.seat_date
         ,i.user_name
         ,i.image_data
+        ,i.comment
       FROM
         (select * from seat_master where floor_id = $floor_id) m 
         left join  (select * from seat_info where seat_date=$seat_date OR seat_date="XXXX/XX/XX") i
@@ -113,7 +115,8 @@ class SeatModel {
             row.tooltip_direction,
             row.seat_date,
             row.user_name,
-            row.image_data));
+            row.image_data,
+            row.comment));
         }
 
         return seats;
@@ -133,12 +136,14 @@ class SeatModel {
         seat_id,
         seat_date,
         user_name,
-        image_data
+        image_data,
+        comment
       ) VALUES (
           $seat_id,
           $seat_date,
           $user_name,
-          $image_data
+          $image_data,
+          $comment
       )
     `;
     const params = {
@@ -146,6 +151,7 @@ class SeatModel {
       $seat_date: seat_info.seat_date,
       $user_name: seat_info.user_name,
       $image_data: seat_info.image_data,
+      $comment: seat_info.comment,
     };
 
     return this.model.run(sql, params)
@@ -178,7 +184,7 @@ class SeatModel {
       $to_date: to_date,
       $user_name: user_name
     };
-
+    
     return this.model.run2(sql, params);
   }
 
@@ -356,11 +362,128 @@ class SeatModel {
             "",
             row.seat_date,
             row.user_name,
+            "",
             ""));
         }
 
         return seats;
       });
+  }
+
+  /**
+   * リプライ一覧取得
+   * 
+   * @param seat_id 席ID
+   * @param seat_date 座席日時
+   * @return Entity を Resolve する
+   */
+  replySelect(seat_id, seat_date) {
+    const sql = `
+      SELECT
+        *
+      FROM
+        reply_info
+      WHERE
+        seat_id = $seat_id
+        AND seat_date = $seat_date
+      ORDER BY
+        seq
+    `;
+    const params = {
+      $seat_id: seat_id,
+      $seat_date: seat_date
+    };
+
+    return this.model.findSelect(sql, params)
+      .then((rows) => {
+        const replys = [];
+
+        for (const row of rows) {
+          replys.push(new ReplyEntity(
+            row.seat_id,
+            row.seat_date,
+            row.seq,
+            row.comment));
+        }
+
+        return replys;
+      });
+  }
+
+  /**
+   * リプライ登録
+   * 
+   * @param seat_id 席ID
+   * @param seat_date 座席日時
+   * @param comment コメント
+   * @return 登録できたら Resolve する
+   */
+  replyInsert(seat_id, seat_date, comment) {
+    // ID は自動採番させる
+    const sql = `
+      INSERT INTO reply_info (
+        seat_id,
+        seat_date,
+        seq,
+        comment
+      ) VALUES (
+          $seat_id,
+          $seat_date,
+          (SELECT coalesce(r.seq, 0) + 1 FROM seat_info s 
+            LEFT JOIN
+            (
+            SELECT seat_id, seat_date, MAX(coalesce(seq, 1)) AS seq
+            FROM reply_info 
+                WHERE seat_id = $seat_id AND seat_date = $seat_date
+                GROUP BY seat_id, seat_date
+            ) r
+            ON s.seat_id = r.seat_id AND s.seat_date = r.seat_date
+            WHERE s.seat_id = $seat_id AND s.seat_date = $seat_date
+          ),
+          $comment
+      )
+    `;
+    const params = {
+      $seat_id: seat_id,
+      $seat_date: seat_date,
+      $comment: comment,
+    };
+
+    return this.model.run(sql, params)
+      .then((id) => {
+        // 登録したデータを返却する
+        //return this.findById(seat_info.seat_id, seat_info.seat_date);
+      });
+  }
+
+  /**
+   * 削除する席に紐づくリプライを削除する
+   * 
+   * @param seat_id seat_id
+   * @param seat_date seat_date
+   * @return 削除できたら Resolve する
+   */
+  deleteReplyInfo(seat_id, seat_date, to_date, user_name) {
+    const sql = `
+      DELETE FROM
+        reply_info
+      WHERE
+        seat_id = $seat_id
+        AND (
+          (seat_date BETWEEN  $seat_date AND $to_date
+          AND seat_date IN (SELECT s.seat_date 
+          FROM seat_info s WHERE s.user_name = $user_name)
+          )
+          OR seat_date = "XXXX/XX/XX")
+    `;
+    const params = {
+      $seat_id: seat_id,
+      $seat_date: seat_date,
+      $to_date: to_date,
+      $user_name: user_name
+    };
+
+    return this.model.run2(sql, params);
   }
 }
 

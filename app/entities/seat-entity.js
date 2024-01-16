@@ -14,7 +14,7 @@ class SeatEntity {
    * @param user_name 使用者名
    * @param image_data 画像データ（base64）
    */
-  constructor(seat_id, seat_name, lat, lng, tooltip_direction, seat_date, user_name, image_data) {
+  constructor(seat_id, seat_name, lat, lng, tooltip_direction, seat_date, user_name, image_data, comment) {
     this.key   = seat_id + "_" + seat_date;
     this.seat_id   = seat_id;
     this.seat_name = seat_name;
@@ -25,6 +25,7 @@ class SeatEntity {
     this.seat_date  = seat_date;
     this.user_name  = user_name;
     this.image_data  = image_data;
+    this.comment  = comment;
   }
 }
 

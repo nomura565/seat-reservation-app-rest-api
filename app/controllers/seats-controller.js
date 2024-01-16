@@ -91,6 +91,7 @@ class SeatsController {
           seat.seat_date = (permanent_flg)? "XXXX/XX/XX" : from_date;
           seat.user_name = req.body.user_name;
           seat.image_data = req.body.image_data;
+          seat.comment = req.body.comment;
           
           await this.seatModel.create(seat)
             .then(
@@ -136,18 +137,34 @@ class SeatsController {
     const seat_date = req.body.seat_date;
     const to_date = req.body.to_date;
     const user_name = req.body.user_name;
-    
-    this.seatModel.delete(seat_id, seat_date, to_date, user_name)
-      .then(this.controller.editSuccess(res))
-      .catch((error) => {
-        if(error.errorCode === 21) {
-          // 削除対象がなかった場合は 404
-          return this.controller.deleteError(res)();
-        }
-        else {
-          return this.controller.editError(res)();
-        }
+    this.seatModel.model.BeginTransaction();
+    const main = async () => {
+      return new Promise(async (resolve, reject) => {
+        await this.seatModel.deleteReplyInfo(seat_id, seat_date, to_date, user_name)
+        .then()
+        .catch((error) => {
+          reject(error);
+        });
+        await this.seatModel.delete(seat_id, seat_date, to_date, user_name)
+        .then(()=>{
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
       });
+    };
+    main()
+      .then(() => {
+        this.seatModel.model.Commit();
+        return this.controller.editSuccess(res)();
+        }
+      )
+      .catch((error) => {
+        this.seatModel.model.Rollback();
+        return this.controller.editError(res)();
+        }
+      );
   }
 
   /**
@@ -223,6 +240,37 @@ class SeatsController {
       .then(this.controller.findSuccess(res))
       .catch(this.controller.findError(res));
   }
+
+  /**
+   * リプライ一覧取得
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+  replySelect(req, res) {
+    const seat_id = req.body.seat_id;
+    const seat_date = req.body.seat_date;
+    
+    this.seatModel.replySelect(seat_id, seat_date)
+      .then(this.controller.findSuccess(res))
+      .catch(this.controller.findError(res));
+  }
+
+    /**
+   * リプライ登録
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+    replyInsert(req, res) {
+      const seat_id = req.body.seat_id;
+      const seat_date = req.body.seat_date;
+      const comment = req.body.comment;
+      
+      this.seatModel.replyInsert(seat_id, seat_date, comment)
+        .then(this.controller.createSuccess(res))
+        .catch(this.controller.editError(res));
+    }
 }
 
 module.exports = SeatsController;

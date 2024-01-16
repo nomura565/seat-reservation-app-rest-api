@@ -42,4 +42,14 @@ router.post('/calendar', (req, res) => {
   seatsController.calendar(req, res);
 });
 
+// リプライ一覧取得
+router.post('/replySelect', (req, res) => {
+  seatsController.replySelect(req, res);
+});
+
+// リプライ登録
+router.post('/replyInsert', (req, res) => {
+  seatsController.replyInsert(req, res);
+});
+
 module.exports = router;
