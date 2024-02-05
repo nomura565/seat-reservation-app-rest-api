@@ -1,0 +1,21 @@
+{
+  "appenders": {
+    "console": {
+      "type": "dateFile",
+      "filename": "logs/access.log",
+      "numBackups": 30,
+      "compress": true,
+      "pattern": "yyyyMMdd",
+      "layout": {
+        "type": "pattern",
+        "pattern": "[%d] [%-5p] %-6c -%m"
+      }
+    }
+  },
+  "categories": {
+    "default": {
+      "appenders": ["console"],
+      "level": "debug"
+    }
+  }
+}
