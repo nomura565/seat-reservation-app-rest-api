@@ -184,7 +184,7 @@ class SeatModel {
       $to_date: to_date,
       $user_name: user_name
     };
-    
+
     return this.model.run2(sql, params);
   }
 

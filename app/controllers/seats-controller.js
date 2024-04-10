@@ -1,10 +1,10 @@
 const Controller = require('./controller');
-const SeatModel  = require('../models/seat-model');
+const SeatModel = require('../models/seat-model');
 const SeatEntity = require('../entities/seat-entity');
 
 const format = require('date-fns/format');
 const parse = require('date-fns/parse');
-const ja = require( 'date-fns/locale/ja');
+const ja = require('date-fns/locale/ja');
 
 const Log4js = require("log4js");
 // 設定ファイルの読み込み
@@ -36,10 +36,10 @@ const logEnd = (target) => {
 
 const logError = (target, error) => {
   const logger = Log4js.getLogger();
-  if(error.constructor.name == MODEL_ERROR_CLASS){
+  if (error.constructor.name == MODEL_ERROR_CLASS) {
     logger.error(target + " errorCode:" + error.errorCode);
     logger.error(target + " errorMessage:" + error.errorMessage);
-  }else{
+  } else {
     logger.error(target + " error:" + error.message);
   }
 }
@@ -60,12 +60,12 @@ class SeatsController {
     this.seatModel = new SeatModel();
   }
 
-   /**
-   * 全件取得する
-   * 
-   * @param res レスポンス
-   */
-   findAllFloor(res) {
+  /**
+  * 全件取得する
+  * 
+  * @param res レスポンス
+  */
+  findAllFloor(res) {
     const logTarget = "findAllFloor";
     logStart(logTarget);
     this.seatModel.findAllFloor()
@@ -78,7 +78,7 @@ class SeatsController {
         return this.controller.findError(res)(error);
       });
   }
-  
+
   /**
    * 全件取得する
    * 
@@ -97,31 +97,31 @@ class SeatsController {
       });
   }
 
-   /**
-   * seat_date を指定して複数件取得する
-   * 
-   * @param req リクエスト
-   * @param res レスポンス
-   */
-   findBySeatDate(req, res) {
+  /**
+  * seat_date を指定して複数件取得する
+  * 
+  * @param req リクエスト
+  * @param res レスポンス
+  */
+  findBySeatDate(req, res) {
     const logTarget = "findBySeatDate";
     logStart(logTarget);
     loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
     loginfo(logTarget, "req.body.floor_id:" + req.body.floor_id);
     const seat_date = req.body.seat_date;
     const floor_id = req.body.floor_id;
-    
+
     this.seatModel.findBySeatDate(seat_date, floor_id)
       .then((result) => {
         logEnd(logTarget);
         return this.controller.findSuccess(res)(result);
       })
       .catch((error) => {
-        
+
         return this.controller.findError(res)(error);
       });
   }
-  
+
   /**
    * 登録する
    * 
@@ -144,8 +144,8 @@ class SeatsController {
         let from_p;
         let to_p;
 
-        if (typeof permanent_flg === 'undefined'){
-          const error = {message:"permanent_flg is undefined"};
+        if (typeof permanent_flg === 'undefined') {
+          const error = { message: "permanent_flg is undefined" };
           logError(logTarget + " permanent_flg", error);
           reject(error);
           return;
@@ -153,51 +153,51 @@ class SeatsController {
 
         try {
           from_p = parse(from_date, "yyyy/MM/dd", new Date());
-          if(isInvalidDate(from_p)){
+          if (isInvalidDate(from_p)) {
             throw new Error("from_date is invalid date");
           }
           to_p = parse(to_date, "yyyy/MM/dd", new Date());
-          if(isInvalidDate(to_p)){
+          if (isInvalidDate(to_p)) {
             throw new Error("to_date is invalid date");
           }
-        } catch(e) {
+        } catch (e) {
           logError(logTarget + " date parse", error);
           reject(e);
           return;
         }
 
-        if(permanent_flg){
+        if (permanent_flg) {
           await this.seatModel.deleteAllSeatId(req.body.seat_id);
         }
 
-        while(true){
+        while (true) {
           const seat = new SeatEntity();
           // user.id = req.body.id;
           seat.seat_id = req.body.seat_id;
-          seat.seat_date = (permanent_flg)? "XXXX/XX/XX" : from_date;
+          seat.seat_date = (permanent_flg) ? "XXXX/XX/XX" : from_date;
           seat.user_name = req.body.user_name;
           seat.image_data = req.body.image_data;
           seat.comment = req.body.comment;
-          
+
           await this.seatModel.create(seat)
             .then()
             .catch((error) => {
-                logError(logTarget + " seatModel.create error", error);
-                result = false;
-                reject(error);
-              }
+              logError(logTarget + " seatModel.create error", error);
+              result = false;
+              reject(error);
+            }
             );
-          if (!result){
+          if (!result) {
             break;
           }
-          if ((from_date == to_date) || permanent_flg){
+          if ((from_date == to_date) || permanent_flg) {
             resolve();
             break;
           }
           try {
             from_p.setDate(from_p.getDate() + 1);
             from_date = formatDate(from_p);
-          } catch(e) {
+          } catch (e) {
             logError(logTarget + " date format", error);
             reject(e);
             return;
@@ -210,16 +210,16 @@ class SeatsController {
         logEnd(logTarget);
         this.seatModel.model.Commit();
         return this.controller.createSuccess(res)(result);
-        }
+      }
       )
       .catch((error) => {
         logError(logTarget + " rollback", error);
         this.seatModel.model.Rollback();
         return this.controller.editError(res)(error);
-        }
+      }
       );
   }
-  
+
   /**
    * 削除する
    * 
@@ -243,33 +243,33 @@ class SeatsController {
         let to_p;
         try {
           seat_p = parse(seat_date, "yyyy/MM/dd", new Date());
-          if(isInvalidDate(seat_p)){
+          if (isInvalidDate(seat_p)) {
             throw new Error("seat_date is invalid date");
           }
           to_p = parse(to_date, "yyyy/MM/dd", new Date());
-          if(isInvalidDate(to_p)){
+          if (isInvalidDate(to_p)) {
             throw new Error("to_date is invalid date");
           }
-        } catch(e) {
+        } catch (e) {
           logError(logTarget + " date parse", error);
           reject(e);
           return;
         }
 
         await this.seatModel.deleteReplyInfo(seat_id, seat_date, to_date, user_name)
-        .then()
-        .catch((error) => {
-          logError(logTarget + " seatModel.deleteReplyInfo", error);
-          reject(error);
-        });
+          .then()
+          .catch((error) => {
+            logError(logTarget + " seatModel.deleteReplyInfo", error);
+            reject(error);
+          });
         await this.seatModel.delete(seat_id, seat_date, to_date, user_name)
-        .then(()=>{
-          resolve();
-        })
-        .catch((error) => {
-          logError(logTarget + " seatModel.delete", error);
-          reject(error);
-        });
+          .then(() => {
+            resolve();
+          })
+          .catch((error) => {
+            logError(logTarget + " seatModel.delete", error);
+            reject(error);
+          });
       });
     };
     main()
@@ -277,13 +277,13 @@ class SeatsController {
         logEnd(logTarget);
         this.seatModel.model.Commit();
         return this.controller.editSuccess(res)(result);
-        }
+      }
       )
       .catch((error) => {
         logError(logTarget + " rollback", error);
         this.seatModel.model.Rollback();
         return this.controller.editError(res)(error);
-        }
+      }
       );
   }
 
@@ -301,13 +301,13 @@ class SeatsController {
     let result = true;
     let seat_list = req.body.seat_list;
     let floor_id = req.body.floor_id;
-    
+
     this.seatModel.model.BeginTransaction();
     const main = async () => {
       return new Promise(async (resolve, reject) => {
 
         await this.seatModel.deleteAllSeatMaster(floor_id);
-        for( var i=0; i<seat_list.length; i++) {
+        for (var i = 0; i < seat_list.length; i++) {
           const seat = new SeatEntity();
           // user.id = req.body.id;
           seat.seat_id = seat_list[i].seat_id;
@@ -325,16 +325,16 @@ class SeatsController {
           await this.seatModel.insert(seat, floor_id)
             .then()
             .catch((error) => {
-                logError(logTarget + " seatModel.insert", error);
-                result = false;
-                reject(error);
-              }
+              logError(logTarget + " seatModel.insert", error);
+              result = false;
+              reject(error);
+            }
             );
-          
-          if (!result){
+
+          if (!result) {
             break;
           }
-          if (i == seat_list.length - 1){
+          if (i == seat_list.length - 1) {
             resolve();
             break;
           }
@@ -346,13 +346,13 @@ class SeatsController {
         logEnd(logTarget);
         this.seatModel.model.Commit();
         return this.controller.createSuccess(res)(result);
-        }
+      }
       )
       .catch((error) => {
         logError(logTarget + " rollback", error);
         this.seatModel.model.Rollback();
         return this.controller.editError(res)(error);
-        }
+      }
       );
   }
 
@@ -373,7 +373,7 @@ class SeatsController {
     const date_ym = req.body.date_ym;
     const date_ym_next = req.body.date_ym_next;
     const date_ym_prev = req.body.date_ym_prev;
-    
+
     this.seatModel.calendar(seat_id, date_ym, date_ym_next, date_ym_prev)
       .then((result) => {
         logEnd(logTarget);
@@ -398,7 +398,7 @@ class SeatsController {
     loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
     const seat_id = req.body.seat_id;
     const seat_date = req.body.seat_date;
-    
+
     this.seatModel.replySelect(seat_id, seat_date)
       .then((result) => {
         logEnd(logTarget);
@@ -410,32 +410,32 @@ class SeatsController {
       });
   }
 
-    /**
-   * リプライ登録
-   * 
-   * @param req リクエスト
-   * @param res レスポンス
-   */
-    replyInsert(req, res) {
-      const logTarget = "replyInsert";
-      logStart(logTarget);
-      loginfo(logTarget, "req.body.seat_id:" + req.body.seat_id);
-      loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
-      loginfo(logTarget, "req.body.comment:" + req.body.comment);
-      const seat_id = req.body.seat_id;
-      const seat_date = req.body.seat_date;
-      const comment = req.body.comment;
-      
-      this.seatModel.replyInsert(seat_id, seat_date, comment)
-        .then((result) => {
-          logEnd(logTarget);
-          return this.controller.createSuccess(res)(result);
-        })
-        .catch((error) => {
-          logError(logTarget, error);
-          return this.controller.editError(res)(error);
-        });
-    }
+  /**
+ * リプライ登録
+ * 
+ * @param req リクエスト
+ * @param res レスポンス
+ */
+  replyInsert(req, res) {
+    const logTarget = "replyInsert";
+    logStart(logTarget);
+    loginfo(logTarget, "req.body.seat_id:" + req.body.seat_id);
+    loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
+    loginfo(logTarget, "req.body.comment:" + req.body.comment);
+    const seat_id = req.body.seat_id;
+    const seat_date = req.body.seat_date;
+    const comment = req.body.comment;
+
+    this.seatModel.replyInsert(seat_id, seat_date, comment)
+      .then((result) => {
+        logEnd(logTarget);
+        return this.controller.createSuccess(res)(result);
+      })
+      .catch((error) => {
+        logError(logTarget, error);
+        return this.controller.editError(res)(error);
+      });
+  }
 }
 
 module.exports = SeatsController;

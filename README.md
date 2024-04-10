@@ -11,17 +11,17 @@ $ npm start
 サーバ起動 : http://localhost:3000/
 ```
 
-| 機能 | メソッド | URL |
-|---|---|---|
-| フロアマスタ全件取得                | GET      | `http://localhost:3000/api/seats/floor`  |
-| 座席情報全件取得(APIテスト用)       | GET      | `http://localhost:3000/api/seats/`       |
-| 年月日,フロアID を指定して複数件取得 | POST     | `http://localhost:3000/api/seats/select` |
-| 座席情報登録                       | POST     | `http://localhost:3000/api/seats/insert` |
-| 座席情報削除                       | DELETE   | `http://localhost:3000/api/seats/delete` |
-| 座席情報更新                       | POST   | `http://localhost:3000/api/seats/update` |
-| カレンダー一覧取得                 | POST   | `http://localhost:3000/api/seats/calendar` |
-| リプライ一覧取得                   | POST   | `http://localhost:3000/api/seats/replySelect` |
-| リプライ登録                       | POST   | `http://localhost:3000/api/seats/replyInsert` |
+| 機能                                 | メソッド | URL                                           |
+| ------------------------------------ | -------- | --------------------------------------------- |
+| フロアマスタ全件取得                 | GET      | `http://localhost:3000/api/seats/floor`       |
+| 座席情報全件取得(APIテスト用)        | GET      | `http://localhost:3000/api/seats/`            |
+| 年月日,フロアID を指定して複数件取得 | POST     | `http://localhost:3000/api/seats/select`      |
+| 座席情報登録                         | POST     | `http://localhost:3000/api/seats/insert`      |
+| 座席情報削除                         | DELETE   | `http://localhost:3000/api/seats/delete`      |
+| 座席情報更新                         | POST     | `http://localhost:3000/api/seats/update`      |
+| カレンダー一覧取得                   | POST     | `http://localhost:3000/api/seats/calendar`    |
+| リプライ一覧取得                     | POST     | `http://localhost:3000/api/seats/replySelect` |
+| リプライ登録                         | POST     | `http://localhost:3000/api/seats/replyInsert` |
 
 ## 構造
 
@@ -59,12 +59,12 @@ seat-reservation-app-rest-api/
 
 ## DB構造
 
-| 論理名 | 物理名 | 説明 |
-|---|---|---|
-| フロアマスタ    | floor_master      | フロア（オフィス）のマスタテーブル  |
-| 座席情報        | seat_info      | 座席の情報テーブル　座席マスタと座席IDで1:Nで紐づく　フロアと座席日付で絞り込むと一意になる  |
-| 座席マスタ      | seat_master      | 座席のマスタテーブル  |
-| リプライ情報    | reply_info       | リプライ情報  |
+| 論理名       | 物理名       | 説明                                                                                        |
+| ------------ | ------------ | ------------------------------------------------------------------------------------------- |
+| フロアマスタ | floor_master | フロア（オフィス）のマスタテーブル                                                          |
+| 座席情報     | seat_info    | 座席の情報テーブル　座席マスタと座席IDで1:Nで紐づく　フロアと座席日付で絞り込むと一意になる |
+| 座席マスタ   | seat_master  | 座席のマスタテーブル                                                                        |
+| リプライ情報 | reply_info   | リプライ情報                                                                                |
 
 ## フロアの追加手順
 

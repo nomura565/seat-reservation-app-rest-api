@@ -14,7 +14,7 @@ class Controller {
       res.json(result);
     };
   }
-  
+
   /**
    * 取得系の失敗時処理
    * 
@@ -27,7 +27,7 @@ class Controller {
       res.json(error);
     };
   }
-  
+
   /**
    * 登録の成功時処理
    * 
@@ -40,7 +40,7 @@ class Controller {
       res.json(result);
     };
   }
-  
+
   /**
    * 削除対象がない場合の失敗時処理
    * 
@@ -53,7 +53,7 @@ class Controller {
       res.json(error);
     };
   }
-  
+
   /**
    * 更新・削除の成功時処理
    * 
@@ -66,7 +66,7 @@ class Controller {
       res.json(result);
     };
   }
-  
+
   /**
    * 登録・更新・削除の失敗時処理
    * 

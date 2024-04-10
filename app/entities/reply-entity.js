@@ -11,11 +11,11 @@ class ReplyEntity {
    * @param comment コメント
    */
   constructor(seat_id, seat_date, seq, comment) {
-    this.key   = seat_id + "_" + seat_date + "_" + seq;
-    this.seat_id   = seat_id;
-    this.seat_date   = seat_date;
+    this.key = seat_id + "_" + seat_date + "_" + seq;
+    this.seat_id = seat_id;
+    this.seat_date = seat_date;
     this.seq = seq;
-    this.comment  = comment;
+    this.comment = comment;
   }
 }
 

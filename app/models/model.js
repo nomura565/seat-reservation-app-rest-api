@@ -24,10 +24,10 @@ class Model {
   findAll(sql) {
     return new Promise((resolve, reject) => {
       db.all(sql, (error, rows) => {
-        if(error) {
+        if (error) {
           reject(new ModelError(20, 'Internal Server Error'));
         }
-        else if(rows === null || rows.length === 0) {
+        else if (rows === null || rows.length === 0) {
           reject(new ModelError(21, 'Entity Not Found'));
         }
         else {
@@ -47,12 +47,12 @@ class Model {
   findSelect(sql, params) {
     return new Promise((resolve, reject) => {
       const stmt = db.prepare(sql);
-      
+
       stmt.all(params, (error, rows) => {
-        if(error) {
+        if (error) {
           reject(new ModelError(11, 'Invalid Arguments'));
         }
-        else if(rows === null) {
+        else if (rows === null) {
           reject(new ModelError(21, 'Entity Not Found'));
         }
         else {
@@ -61,7 +61,7 @@ class Model {
       });
     });
   }
-  
+
   /**
    * パラメータを指定して1件取得する
    * 
@@ -72,12 +72,12 @@ class Model {
   findOne(sql, params) {
     return new Promise((resolve, reject) => {
       const stmt = db.prepare(sql);
-      
+
       stmt.all(params, (error, rows) => {
-        if(error) {
+        if (error) {
           reject(new ModelError(11, 'Invalid Arguments'));
         }
-        else if(rows === null || rows.length === 0) {
+        else if (rows === null || rows.length === 0) {
           reject(new ModelError(21, 'Entity Not Found'));
         }
         else {
@@ -87,7 +87,7 @@ class Model {
       });
     });
   }
-  
+
   /**
    * パラメータを指定して更新系処理を実行する
    * 
@@ -98,14 +98,14 @@ class Model {
   run(sql, params) {
     return new Promise((resolve, reject) => {
       const stmt = db.prepare(sql);
-      
+
       // bind() して this を書き換えているのでアロー関数を使わない
-      stmt.run(params, function(error) {
-        if(this.changes === 1) {
+      stmt.run(params, function (error) {
+        if (this.changes === 1) {
           // lastID は INSERT 時のみ ID を返す
           resolve(this.lastID);
         }
-        else if(this.changes === 0) {
+        else if (this.changes === 0) {
           reject(new ModelError(21, 'Entity Not Found'));
         }
         else {
@@ -125,14 +125,14 @@ class Model {
   run2(sql, params) {
     return new Promise((resolve, reject) => {
       const stmt = db.prepare(sql);
-      
+
       // bind() して this を書き換えているのでアロー関数を使わない
-      stmt.run(params, function(error) {
-        if(this.changes === 1) {
+      stmt.run(params, function (error) {
+        if (this.changes === 1) {
           // lastID は INSERT 時のみ ID を返す
           resolve(this.lastID);
         }
-        else if(this.changes === 0) {
+        else if (this.changes === 0) {
           resolve(this.lastID);
         }
         else {

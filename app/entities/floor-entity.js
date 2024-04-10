@@ -10,10 +10,10 @@ class FloorEntity {
    * @param floor_map フロアマップ
    */
   constructor(floor_id, floor_name, floor_map) {
-    this.key   = floor_id;
-    this.floor_id   = floor_id;
+    this.key = floor_id;
+    this.floor_id = floor_id;
     this.floor_name = floor_name;
-    this.floor_map  = floor_map;
+    this.floor_map = floor_map;
   }
 }
 
