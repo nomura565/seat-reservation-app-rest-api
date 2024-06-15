@@ -44,6 +44,14 @@ const logError = (target, error) => {
   }
 }
 
+const getIpAddress = (req) => {
+  return req.headers['x-forwarded-for'] || 
+    (req.connection && req.connection.remoteAddress) || 
+    (req.connection.socket && req.connection.socket.remoteAddress) || 
+    (req.socket && req.socket.remoteAddress) || 
+    '0.0.0.0';
+}
+
 const isInvalidDate = (date) => Number.isNaN(date.getTime());
 
 const MODEL_ERROR_CLASS = "ModelError";
@@ -108,6 +116,7 @@ class SeatsController {
     logStart(logTarget);
     loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
     loginfo(logTarget, "req.body.floor_id:" + req.body.floor_id);
+    loginfo(logTarget, "IpAddress:" + getIpAddress(req));
     const seat_date = req.body.seat_date;
     const floor_id = req.body.floor_id;
 
@@ -134,6 +143,9 @@ class SeatsController {
     loginfo(logTarget, "req.body.from_date:" + req.body.from_date);
     loginfo(logTarget, "req.body.to_date:" + req.body.to_date);
     loginfo(logTarget, "req.body.permanent_flg:" + req.body.permanent_flg);
+    loginfo(logTarget, "req.body.seat_id:" + req.body.seat_id);
+    loginfo(logTarget, "req.body.user_name:" + req.body.user_name);
+    loginfo(logTarget, "IpAddress:" + getIpAddress(req));
     let result = true;
     this.seatModel.model.BeginTransaction();
     const main = async () => {
@@ -232,6 +244,9 @@ class SeatsController {
     loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
     loginfo(logTarget, "req.body.to_date:" + req.body.to_date);
     loginfo(logTarget, "req.body.user_name:" + req.body.user_name);
+    loginfo(logTarget, "req.body.seat_id:" + req.body.seat_id);
+    loginfo(logTarget, "IpAddress:" + getIpAddress(req));
+    loginfo(logTarget, "req.body.used_name:" + req.body.used_name);
     const seat_id = req.body.seat_id;
     const seat_date = req.body.seat_date;
     const to_date = req.body.to_date;
@@ -422,6 +437,7 @@ class SeatsController {
     loginfo(logTarget, "req.body.seat_id:" + req.body.seat_id);
     loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
     loginfo(logTarget, "req.body.comment:" + req.body.comment);
+    loginfo(logTarget, "IpAddress:" + getIpAddress(req));
     const seat_id = req.body.seat_id;
     const seat_date = req.body.seat_date;
     const comment = req.body.comment;
