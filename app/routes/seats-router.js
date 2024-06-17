@@ -52,4 +52,9 @@ router.post('/replyInsert', (req, res) => {
   seatsController.replyInsert(req, res);
 });
 
+// 座席使用確認
+router.post('/confirmSeatUse', (req, res) => {
+  seatsController.confirmSeatUse(req, res);
+});
+
 module.exports = router;

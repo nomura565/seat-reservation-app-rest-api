@@ -45,10 +45,10 @@ const logError = (target, error) => {
 }
 
 const getIpAddress = (req) => {
-  return req.headers['x-forwarded-for'] || 
-    (req.connection && req.connection.remoteAddress) || 
-    (req.connection.socket && req.connection.socket.remoteAddress) || 
-    (req.socket && req.socket.remoteAddress) || 
+  return req.headers['x-forwarded-for'] ||
+    (req.connection && req.connection.remoteAddress) ||
+    (req.connection.socket && req.connection.socket.remoteAddress) ||
+    (req.socket && req.socket.remoteAddress) ||
     '0.0.0.0';
 }
 
@@ -450,6 +450,34 @@ class SeatsController {
       .catch((error) => {
         logError(logTarget, error);
         return this.controller.editError(res)(error);
+      });
+  }
+
+  /**
+* 座席使用確認
+* 
+* @param req リクエスト
+* @param res レスポンス
+*/
+  confirmSeatUse(req, res) {
+    const logTarget = "confirmSeatUse";
+    logStart(logTarget);
+    loginfo(logTarget, "req.body.from_date:" + req.body.from_date);
+    loginfo(logTarget, "req.body.to_date:" + req.body.to_date);
+    loginfo(logTarget, "req.body.seat_id:" + req.body.seat_id);
+    loginfo(logTarget, "IpAddress:" + getIpAddress(req));
+    const seat_id = req.body.seat_id;
+    const from_date = req.body.from_date;
+    const to_date = req.body.to_date;
+
+    this.seatModel.confirmSeatUse(seat_id, from_date, to_date)
+      .then((result) => {
+        logEnd(logTarget);
+        return this.controller.findSuccess(res)(result);
+      })
+      .catch((error) => {
+
+        return this.controller.findError(res)(error);
       });
   }
 }

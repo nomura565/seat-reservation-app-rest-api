@@ -485,6 +485,56 @@ class SeatModel {
 
     return this.model.run2(sql, params);
   }
+
+  /**
+ * 座席使用確認
+ * 
+ * @param seat_id seat_id
+ * @param from_date from_date
+ * @param to_date to_date
+ * @return Entity を Resolve する
+ */
+  confirmSeatUse(seat_id, from_date, to_date) {
+    const sql = `
+        SELECT
+          *
+        FROM
+          seat_info
+        WHERE 
+          seat_id = $seat_id
+          AND (
+            (seat_date >= $from_date
+            AND seat_date <= $to_date) 
+            OR seat_date = "XXXX/XX/XX"
+          )
+      `;
+    const params = {
+      $seat_id: seat_id,
+      $from_date: from_date,
+      $to_date: to_date
+    };
+
+    return this.model.findSelect(sql, params)
+      .then((rows) => {
+        const seats = [];
+
+        for (const row of rows) {
+          seats.push(new SeatEntity(
+            row.seat_id,
+            "",
+            "",
+            "",
+            "",
+            row.seat_date,
+            row.user_name,
+            "",
+            ""));
+        }
+
+        return seats;
+      });
+  }
+
 }
 
 
