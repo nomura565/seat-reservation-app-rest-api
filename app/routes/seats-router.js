@@ -57,4 +57,9 @@ router.post('/confirmSeatUse', (req, res) => {
   seatsController.confirmSeatUse(req, res);
 });
 
+// コメント一覧取得
+router.post('/commentSelect', (req, res) => {
+  seatsController.commentSelect(req, res);
+});
+
 module.exports = router;

@@ -480,6 +480,29 @@ class SeatsController {
         return this.controller.findError(res)(error);
       });
   }
+
+  /**
+   * コメント一覧取得
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+  commentSelect(req, res) {
+    const logTarget = "commentSelect";
+    logStart(logTarget);
+    loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
+    const seat_date = req.body.seat_date;
+
+    this.seatModel.commentSelect(seat_date)
+      .then((result) => {
+        logEnd(logTarget);
+        return this.controller.findSuccess(res)(result);
+      })
+      .catch((error) => {
+        logError(logTarget, error);
+        return this.controller.findError(res)(error);
+      });
+  }
 }
 
 module.exports = SeatsController;

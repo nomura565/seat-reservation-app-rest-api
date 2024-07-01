@@ -534,7 +534,62 @@ class SeatModel {
         return seats;
       });
   }
+  /**
+   * コメント一覧取得
+   * 
+   * @param seat_date 座席日時
+   * @return Entity を Resolve する
+   */
+  commentSelect(seat_date) {
+    const sql = `
+      SELECT
+        si.seat_id,
+        si.seat_date,
+        si.user_name,
+        si.comment,
+        ri.comment AS reply,
+        ri.seq
+      FROM seat_info si
+      LEFT JOIN reply_info ri
+      ON si.seat_id = ri.seat_id
+      AND si.seat_date = ri.seat_date
+      WHERE (si.comment IS NOT NULL OR ri.comment IS NOT NULL)
+      AND si.seat_date = $seat_date
+      ORDER BY si. seat_id, ri.seq
+    `;
+    const params = {
+      $seat_date: seat_date
+    };
 
+    return this.model.findSelect(sql, params)
+      .then((rows) => {
+        const comments = [];
+
+        for (const row of rows) {
+          let comment = new ReplyEntity(
+            row.seat_id,
+            row.seat_date,
+            row.seq,
+            row.comment);
+            comment["user_name"] = row.user_name;
+
+            let tmpComment = comments.filter((c) => c.seat_id === row.seat_id)[0];
+            if(typeof tmpComment !== "undefined"){
+              tmpComment["replys"].push(row.reply);
+            } else {
+              if(row.reply != null){
+                comment["replys"] = [row.reply];
+              } else {
+                comment["replys"] = [];
+              }
+              comments.push(comment);
+            }
+            
+        }
+
+        return comments;
+      });
+  }
 }
 
 
