@@ -491,9 +491,11 @@ class SeatsController {
     const logTarget = "commentSelect";
     logStart(logTarget);
     loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
+    loginfo(logTarget, "req.body.floor_id:" + req.body.floor_id);
     const seat_date = req.body.seat_date;
+    const floor_id = req.body.floor_id;
 
-    this.seatModel.commentSelect(seat_date)
+    this.seatModel.commentSelect(seat_date, floor_id)
       .then((result) => {
         logEnd(logTarget);
         return this.controller.findSuccess(res)(result);

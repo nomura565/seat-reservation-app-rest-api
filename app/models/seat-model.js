@@ -2,6 +2,7 @@ const Model = require('./model');
 const SeatEntity = require('../entities/seat-entity');
 const FloorEntity = require('../entities/floor-entity');
 const ReplyEntity = require('../entities/reply-entity');
+const PERMANENT_DATE = "XXXX/XX/XX";
 
 /**
  * Seat Model
@@ -94,7 +95,7 @@ class SeatModel {
         ,i.comment
       FROM
         (select * from seat_master where floor_id = $floor_id) m 
-        left join  (select * from seat_info where seat_date=$seat_date OR seat_date="XXXX/XX/XX") i
+        left join  (select * from seat_info where seat_date=$seat_date OR seat_date="${PERMANENT_DATE}") i
         on m.seat_id = i.seat_id
     `;
     const params = {
@@ -176,7 +177,7 @@ class SeatModel {
         seat_id = $seat_id
         AND (
           (seat_date BETWEEN  $seat_date AND $to_date AND user_name = $user_name)
-          OR seat_date = "XXXX/XX/XX")
+          OR seat_date = "${PERMANENT_DATE}")
     `;
     const params = {
       $seat_id: seat_id,
@@ -415,7 +416,7 @@ class SeatModel {
    * 
    * @param seat_id 席ID
    * @param seat_date 座席日時
-   * @param comment コメント
+   * @param comment コメント 
    * @return 登録できたら Resolve する
    */
   replyInsert(seat_id, seat_date, comment) {
@@ -474,7 +475,7 @@ class SeatModel {
           AND seat_date IN (SELECT s.seat_date 
           FROM seat_info s WHERE s.user_name = $user_name)
           )
-          OR seat_date = "XXXX/XX/XX")
+          OR seat_date = "${PERMANENT_DATE}")
     `;
     const params = {
       $seat_id: seat_id,
@@ -505,7 +506,7 @@ class SeatModel {
           AND (
             (seat_date >= $from_date
             AND seat_date <= $to_date) 
-            OR seat_date = "XXXX/XX/XX"
+            OR seat_date = "${PERMANENT_DATE}"
           )
       `;
     const params = {
@@ -538,9 +539,10 @@ class SeatModel {
    * コメント一覧取得
    * 
    * @param seat_date 座席日時
+   * @param floor_id フロアID
    * @return Entity を Resolve する
    */
-  commentSelect(seat_date) {
+  commentSelect(seat_date, floor_id) {
     const sql = `
       SELECT
         si.seat_id,
@@ -552,13 +554,17 @@ class SeatModel {
       FROM seat_info si
       LEFT JOIN reply_info ri
       ON si.seat_id = ri.seat_id
-      AND si.seat_date = ri.seat_date
+      AND ri.seat_date = $seat_date
+      LEFT JOIN seat_master sm
+	    ON si.seat_id = sm.seat_id
       WHERE (si.comment IS NOT NULL OR ri.comment IS NOT NULL)
-      AND si.seat_date = $seat_date
-      ORDER BY si. seat_id, ri.seq
+      AND (si.seat_date = $seat_date OR si.seat_date = "${PERMANENT_DATE}")
+      AND sm.floor_id = $floor_id
+      ORDER BY si.seat_id, ri.seq
     `;
     const params = {
-      $seat_date: seat_date
+      $seat_date: seat_date,
+      $floor_id: floor_id
     };
 
     return this.model.findSelect(sql, params)
