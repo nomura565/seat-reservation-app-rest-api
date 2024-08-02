@@ -1,7 +1,7 @@
-﻿# A5:ER FORMAT:17
+﻿# A5:ER FORMAT:18
 # A5:ER ENCODING:UTF8
 # A5:ER Mk-1 Copyright © 2007 m.matsubara
-# A5:SQL Mk-2 Version 2.18.4 Copyright © 1997 - 2023 m.matsubara
+# A5:SQL Mk-2 Version 2.19.2 Copyright © 1997 - 2024 m.matsubara
 #  https://a5m2.mmatsubara.com
 
 [Manager]
@@ -48,6 +48,7 @@ BugFixEntityWidth=1
 PName=user
 LName=user
 Comment=
+TableInnerOption=
 TableOption=
 Page=MAIN
 Left=350
@@ -65,6 +66,7 @@ ZOrder=-2
 PName=sqlite_sequence
 LName=sqlite_sequence
 Comment=
+TableInnerOption=
 TableOption=
 Page=MAIN
 Left=50
@@ -81,26 +83,30 @@ ZOrder=-1
 PName=seat_master
 LName=座席マスタ
 Comment=
+TableInnerOption=
 TableOption=
 Page=MAIN
 Left=50
-Top=150
+Top=200
 Field="座席ID","seat_id","*sqlite_int","NOT NULL",0,"","",$FFFFFFFF,""
 Field="座席名","seat_name","*sqlite_varchar",,,"","",$FFFFFFFF,""
 Field="緯度","lat","*sqlite_int","NOT NULL",,"","",$FFFFFFFF,""
 Field="経度","lng","*sqlite_int","NOT NULL",,"","",$FFFFFFFF,""
 Field="ツールチップの開く方向","tooltip_direction","*sqlite_varchar",,,"","",$FFFFFFFF,""
+Field="施設フラグ","facility_flg","*sqlite_int","NOT NULL",,"0","",$FFFFFFFF,""
+Field="施設ID","facility_id","*sqlite_int",,,"","",$FFFFFFFF,""
 EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
-ModifiedDateTime=20230617202224
-Position="MAIN",50,150,326,134
+ModifiedDateTime=20240718180418
+Position="MAIN",50,200,415,212
 ZOrder=1
 
 [Entity]
 PName=seat_info
 LName=座席情報
 Comment=
+TableInnerOption=
 TableOption=
 Page=MAIN
 Left=550
@@ -121,6 +127,7 @@ ZOrder=2
 PName=reply_info
 LName=リプライ情報
 Comment=
+TableInnerOption=
 TableOption=
 Page=MAIN
 Left=900

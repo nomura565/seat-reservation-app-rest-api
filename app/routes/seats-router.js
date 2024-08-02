@@ -62,4 +62,9 @@ router.post('/commentSelect', (req, res) => {
   seatsController.commentSelect(req, res);
 });
 
+// ガルーンスケジュール取得
+router.post('/garoonScheduleSelect', (req, res) => {
+  seatsController.garoonScheduleSelect(req, res);
+});
+
 module.exports = router;

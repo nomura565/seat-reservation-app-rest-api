@@ -14,9 +14,12 @@
     "url": "git+https://github.com/nomura565/seat-reservation-app-rest-api.git"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "body-parser": "1.18.2",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.4.5",
     "express": "4.16.3",
+    "https": "^1.0.0",
     "log4js": "^6.9.1",
     "sqlite3": "5.0.0"
   }

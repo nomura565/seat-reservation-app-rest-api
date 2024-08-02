@@ -2,7 +2,10 @@ const Model = require('./model');
 const SeatEntity = require('../entities/seat-entity');
 const FloorEntity = require('../entities/floor-entity');
 const ReplyEntity = require('../entities/reply-entity');
-const PERMANENT_DATE = "XXXX/XX/XX";
+const Const = require('../controllers/const');
+const axios = require("axios");
+const https = require("https");
+
 
 /**
  * Seat Model
@@ -95,7 +98,7 @@ class SeatModel {
         ,i.comment
       FROM
         (select * from seat_master where floor_id = $floor_id) m 
-        left join  (select * from seat_info where seat_date=$seat_date OR seat_date="${PERMANENT_DATE}") i
+        left join  (select * from seat_info where seat_date=$seat_date OR seat_date="${Const.PERMANENT_DATE}") i
         on m.seat_id = i.seat_id
     `;
     const params = {
@@ -117,7 +120,9 @@ class SeatModel {
             row.seat_date,
             row.user_name,
             row.image_data,
-            row.comment));
+            row.comment,
+            row.facility_flg,
+            row.facility_id));
         }
 
         return seats;
@@ -177,7 +182,7 @@ class SeatModel {
         seat_id = $seat_id
         AND (
           (seat_date BETWEEN  $seat_date AND $to_date AND user_name = $user_name)
-          OR seat_date = "${PERMANENT_DATE}")
+          OR seat_date = "${Const.PERMANENT_DATE}")
     `;
     const params = {
       $seat_id: seat_id,
@@ -253,14 +258,18 @@ class SeatModel {
             lng,
             floor_id,
             seat_name,
-            tooltip_direction
+            tooltip_direction,
+            facility_flg,
+            facility_id
           ) VALUES (
               (SELECT MAX(coalesce(seat_id, 0))+1 FROM seat_master) ,
               $lat,
               $lng,
               $floor_id,
               $seat_name,
-              $tooltip_direction
+              $tooltip_direction,
+              $facility_flg,
+              $facility_id
           )
         `;
       temp_params = {
@@ -268,7 +277,9 @@ class SeatModel {
         $lng: seat_info.lng,
         $floor_id: floor_id,
         $seat_name: seat_info.seat_name,
-        $tooltip_direction: seat_info.tooltip_direction
+        $tooltip_direction: seat_info.tooltip_direction,
+        $facility_flg: seat_info.facility_flg,
+        $facility_id: seat_info.facility_id
       };
     } else {
       temp_sql = `
@@ -278,14 +289,18 @@ class SeatModel {
             lng,
             floor_id,
             seat_name,
-            tooltip_direction
+            tooltip_direction,
+            facility_flg,
+            facility_id
           ) VALUES (
               $seat_id,
               $lat,
               $lng,
               $floor_id,
               $seat_name,
-              $tooltip_direction
+              $tooltip_direction,
+              $facility_flg,
+              $facility_id
           )
         `;
       temp_params = {
@@ -294,7 +309,9 @@ class SeatModel {
         $lng: seat_info.lng,
         $floor_id: floor_id,
         $seat_name: seat_info.seat_name,
-        $tooltip_direction: seat_info.tooltip_direction
+        $tooltip_direction: seat_info.tooltip_direction,
+        $facility_flg: seat_info.facility_flg,
+        $facility_id: seat_info.facility_id
       };
     }
 
@@ -364,7 +381,9 @@ class SeatModel {
             row.seat_date,
             row.user_name,
             "",
-            ""));
+            "",
+            0,
+            null));
         }
 
         return seats;
@@ -475,7 +494,7 @@ class SeatModel {
           AND seat_date IN (SELECT s.seat_date 
           FROM seat_info s WHERE s.user_name = $user_name)
           )
-          OR seat_date = "${PERMANENT_DATE}")
+          OR seat_date = "${Const.PERMANENT_DATE}")
     `;
     const params = {
       $seat_id: seat_id,
@@ -506,7 +525,7 @@ class SeatModel {
           AND (
             (seat_date >= $from_date
             AND seat_date <= $to_date) 
-            OR seat_date = "${PERMANENT_DATE}"
+            OR seat_date = "${Const.PERMANENT_DATE}"
           )
       `;
     const params = {
@@ -529,7 +548,9 @@ class SeatModel {
             row.seat_date,
             row.user_name,
             "",
-            ""));
+            "",
+            0,
+            null));
         }
 
         return seats;
@@ -558,7 +579,7 @@ class SeatModel {
       LEFT JOIN seat_master sm
 	    ON si.seat_id = sm.seat_id
       WHERE (si.comment IS NOT NULL OR ri.comment IS NOT NULL)
-      AND (si.seat_date = $seat_date OR si.seat_date = "${PERMANENT_DATE}")
+      AND (si.seat_date = $seat_date OR si.seat_date = "${Const.PERMANENT_DATE}")
       AND sm.floor_id = $floor_id
       ORDER BY si.seat_id, ri.seq
     `;
@@ -577,24 +598,51 @@ class SeatModel {
             row.seat_date,
             row.seq,
             row.comment);
-            comment["user_name"] = row.user_name;
+          comment["user_name"] = row.user_name;
 
-            let tmpComment = comments.filter((c) => c.seat_id === row.seat_id)[0];
-            if(typeof tmpComment !== "undefined"){
-              tmpComment["replys"].push(row.reply);
+          let tmpComment = comments.filter((c) => c.seat_id === row.seat_id)[0];
+          if (typeof tmpComment !== "undefined") {
+            tmpComment["replys"].push(row.reply);
+          } else {
+            if (row.reply != null) {
+              comment["replys"] = [row.reply];
             } else {
-              if(row.reply != null){
-                comment["replys"] = [row.reply];
-              } else {
-                comment["replys"] = [];
-              }
-              comments.push(comment);
+              comment["replys"] = [];
             }
-            
+            comments.push(comment);
+          }
+
         }
 
         return comments;
       });
+  }
+  /**
+   * ガルーンスケジュール取得
+   * 
+   * @param seat_date 座席日時
+   * @param floor_id フロアID
+   * @param facility_id 施設ID
+   * @return Entity を Resolve する
+   */
+  garoonScheduleSelect(range_start, range_end, facility_id) {
+    const httpsAgent = new https.Agent({
+      rejectUnauthorized: false,
+    })
+    axios.defaults.httpsAgent = httpsAgent;
+    return axios
+      .get(`${Const.GAROON_URL}${Const.GAROON_GET_SCHEDULE}`, {
+        headers: Const.GAROON_HEADER,
+        params: {
+          rangeStart: range_start,
+          rangeEnd: range_end,
+          target: facility_id,
+          targetType: "facility"
+        }
+      })
+      .then((response) => {
+        return response.data;
+      })
   }
 }
 

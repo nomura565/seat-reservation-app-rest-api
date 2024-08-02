@@ -1,6 +1,7 @@
 const Controller = require('./controller');
 const SeatModel = require('../models/seat-model');
 const SeatEntity = require('../entities/seat-entity');
+const Const = require('../controllers/const');
 
 const format = require('date-fns/format');
 const parse = require('date-fns/parse');
@@ -186,7 +187,7 @@ class SeatsController {
           const seat = new SeatEntity();
           // user.id = req.body.id;
           seat.seat_id = req.body.seat_id;
-          seat.seat_date = (permanent_flg) ? "XXXX/XX/XX" : from_date;
+          seat.seat_date = (permanent_flg) ? Const.PERMANENT_DATE : from_date;
           seat.user_name = req.body.user_name;
           seat.image_data = req.body.image_data;
           seat.comment = req.body.comment;
@@ -330,12 +331,16 @@ class SeatsController {
           seat.lng = seat_list[i].lng;
           seat.seat_name = seat_list[i].seat_name;
           seat.tooltip_direction = seat_list[i].tooltip_direction;
+          seat.facility_flg = seat_list[i].facility_flg;
+          seat.facility_id = seat_list[i].facility_id;
 
           loginfo(logTarget, "seat.seat_id:" + seat.seat_id);
           loginfo(logTarget, "seat.lat:" + seat.lat);
           loginfo(logTarget, "seat.lng:" + seat.lng);
           loginfo(logTarget, "seat.seat_name:" + seat.seat_name);
           loginfo(logTarget, "seat.tooltip_direction:" + seat.tooltip_direction);
+          loginfo(logTarget, "seat.facility_flg:" + seat.facility_flg);
+          loginfo(logTarget, "seat.facility_id:" + seat.facility_id);
 
           await this.seatModel.insert(seat, floor_id)
             .then()
@@ -496,6 +501,32 @@ class SeatsController {
     const floor_id = req.body.floor_id;
 
     this.seatModel.commentSelect(seat_date, floor_id)
+      .then((result) => {
+        logEnd(logTarget);
+        return this.controller.findSuccess(res)(result);
+      })
+      .catch((error) => {
+        logError(logTarget, error);
+        return this.controller.findError(res)(error);
+      });
+  }
+  /**
+   * ガルーンスケジュール取得
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+  garoonScheduleSelect(req, res) {
+    const logTarget = "garoonScheduleSelect";
+    logStart(logTarget);
+    loginfo(logTarget, "req.body.range_start:" + req.body.range_start);
+    loginfo(logTarget, "req.body.range_end:" + req.body.range_end);
+    loginfo(logTarget, "req.body.facility_id:" + req.body.facility_id);
+    const range_start = req.body.range_start;
+    const range_end = req.body.range_end;
+    const facility_id = req.body.facility_id;
+
+    this.seatModel.garoonScheduleSelect(range_start, range_end, facility_id)
       .then((result) => {
         logEnd(logTarget);
         return this.controller.findSuccess(res)(result);
