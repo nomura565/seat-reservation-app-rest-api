@@ -116,10 +116,11 @@ Field="座席日時","seat_date","*sqlite_varchar","NOT NULL",1,"","",$FFFFFFFF,
 Field="使用者名","user_name","*sqlite_varchar",,,"","",$FFFFFFFF,""
 Field="画像データ","image_data","BLOB",,,"","",$FFFFFFFF,""
 Field="コメント","comment","*sqlite_varchar",,,"","",$FFFFFFFF,""
+Field="在席フラグ","sitting_flg","*sqlite_int","NOT NULL",,"0","",$FFFFFFFF,""
 EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
-ModifiedDateTime=20240112170331
+ModifiedDateTime=20240822100016
 Position="MAIN",550,150
 ZOrder=2
 

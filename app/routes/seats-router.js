@@ -67,4 +67,9 @@ router.post('/garoonScheduleSelect', (req, res) => {
   seatsController.garoonScheduleSelect(req, res);
 });
 
+// 在席フラグ更新
+router.post('/sittingFlgUpdate', (req, res) => {
+  seatsController.sittingFlgUpdate(req, res);
+});
+
 module.exports = router;

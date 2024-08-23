@@ -536,6 +536,34 @@ class SeatsController {
         return this.controller.findError(res)(error);
       });
   }
+  /**
+ * 在席フラグ更新
+ * 
+ * @param req リクエスト
+ * @param res レスポンス
+ */
+  sittingFlgUpdate(req, res) {
+    const logTarget = "sittingFlgUpdate";
+    logStart(logTarget);
+    loginfo(logTarget, "req.body.seat_id:" + req.body.seat_id);
+    loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
+    loginfo(logTarget, "req.body.sitting_flg:" + req.body.sitting_flg);
+    loginfo(logTarget, "req.body.used_name:" + req.body.used_name);
+    loginfo(logTarget, "IpAddress:" + getIpAddress(req));
+    const seat_id = req.body.seat_id;
+    const seat_date = req.body.seat_date;
+    const sitting_flg = req.body.sitting_flg;
+
+    this.seatModel.sittingFlgUpdate(seat_id, seat_date, sitting_flg)
+      .then((result) => {
+        logEnd(logTarget);
+        return this.controller.createSuccess(res)(result);
+      })
+      .catch((error) => {
+        logError(logTarget, error);
+        return this.controller.editError(res)(error);
+      });
+  }
 }
 
 module.exports = SeatsController;

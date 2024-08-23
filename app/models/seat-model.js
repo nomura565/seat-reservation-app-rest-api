@@ -96,6 +96,7 @@ class SeatModel {
         ,i.user_name
         ,i.image_data
         ,i.comment
+        ,COALESCE(i.sitting_flg, 0) AS sitting_flg
       FROM
         (select * from seat_master where floor_id = $floor_id) m 
         left join  (select * from seat_info where seat_date=$seat_date OR seat_date="${Const.PERMANENT_DATE}") i
@@ -122,7 +123,8 @@ class SeatModel {
             row.image_data,
             row.comment,
             row.facility_flg,
-            row.facility_id));
+            row.facility_id,
+            row.sitting_flg));
         }
 
         return seats;
@@ -136,7 +138,6 @@ class SeatModel {
    * @return 登録できたら Resolve する
    */
   create(seat_info) {
-    // ID は自動採番させる
     const sql = `
       INSERT INTO seat_info (
         seat_id,
@@ -383,7 +384,8 @@ class SeatModel {
             "",
             "",
             0,
-            null));
+            null,
+            0));
         }
 
         return seats;
@@ -439,7 +441,6 @@ class SeatModel {
    * @return 登録できたら Resolve する
    */
   replyInsert(seat_id, seat_date, comment) {
-    // ID は自動採番させる
     const sql = `
       INSERT INTO reply_info (
         seat_id,
@@ -550,7 +551,8 @@ class SeatModel {
             "",
             "",
             0,
-            null));
+            null,
+            0));
         }
 
         return seats;
@@ -643,6 +645,33 @@ class SeatModel {
       .then((response) => {
         return response.data;
       })
+  }
+  /**
+   * 在席フラグ更新
+   * 
+   * @param seat_id 席ID
+   * @param seat_date 座席日時
+   * @param sitting_flg 在席フラグ 
+   * @return 登録できたら Resolve する
+   */
+  sittingFlgUpdate(seat_id, seat_date, sitting_flg) {
+    const sql = `
+      UPDATE seat_info SET
+        sitting_flg = $sitting_flg
+      WHERE seat_id = $seat_id
+      AND seat_date = $seat_date
+    `;
+    const params = {
+      $seat_id: seat_id,
+      $seat_date: seat_date,
+      $sitting_flg: sitting_flg,
+    };
+
+    return this.model.run(sql, params)
+      .then((id) => {
+        // 登録したデータを返却する
+        //return this.findById(seat_info.seat_id, seat_info.seat_date);
+      });
   }
 }
 
