@@ -97,10 +97,19 @@ class SeatModel {
         ,i.image_data
         ,i.comment
         ,COALESCE(i.sitting_flg, 0) AS sitting_flg
+        ,COALESCE(r.reply_count, 0) AS reply_count
+		    ,CASE WHEN i.comment IS NOT NULL THEN 1 ELSE 0 END + COALESCE(r.reply_count, 0) AS comment_reply_count
       FROM
-        (select * from seat_master where floor_id = $floor_id) m 
-        left join  (select * from seat_info where seat_date=$seat_date OR seat_date="${Const.PERMANENT_DATE}") i
-        on m.seat_id = i.seat_id
+        (SELECT * FROM seat_master WHERE floor_id = $floor_id) m 
+        LEFT JOIN  (SELECT * FROM seat_info WHERE seat_date=$seat_date OR seat_date="${Const.PERMANENT_DATE}") i
+        ON m.seat_id = i.seat_id
+        LEFT JOIN  (
+          SELECT COUNT(*) AS reply_count, seat_id, seat_date 
+          FROM reply_info 
+          WHERE seat_date=$seat_date 
+          GROUP BY seat_id, seat_date
+        ) r
+        ON i.seat_id = r.seat_id AND (i.seat_date = r.seat_date OR i.seat_date="${Const.PERMANENT_DATE}")
     `;
     const params = {
       $seat_date: seat_date,
@@ -124,7 +133,9 @@ class SeatModel {
             row.comment,
             row.facility_flg,
             row.facility_id,
-            row.sitting_flg));
+            row.sitting_flg,
+            row.reply_count,
+            row.comment_reply_count));
         }
 
         return seats;
@@ -458,8 +469,8 @@ class SeatModel {
                 WHERE seat_id = $seat_id AND seat_date = $seat_date
                 GROUP BY seat_id, seat_date
             ) r
-            ON s.seat_id = r.seat_id AND s.seat_date = r.seat_date
-            WHERE s.seat_id = $seat_id AND s.seat_date = $seat_date
+            ON s.seat_id = r.seat_id AND (s.seat_date = r.seat_date OR s.seat_date = "${Const.PERMANENT_DATE}")
+            WHERE s.seat_id = $seat_id AND (s.seat_date = $seat_date OR s.seat_date = "${Const.PERMANENT_DATE}")
           ),
           $comment
       )
@@ -672,6 +683,88 @@ class SeatModel {
         // 登録したデータを返却する
         //return this.findById(seat_info.seat_id, seat_info.seat_date);
       });
+  }
+  /**
+   * 在席確認
+   * 
+   * @param seat_date 座席日時
+   * @return 登録できたら Resolve する
+   */
+  async sittingConfirm(seat_date) {
+    const sql = `
+      SELECT seat_date 
+      FROM sitting_confirm
+      WHERE seat_date = $seat_date
+    `;
+    let params = {
+      $seat_date: seat_date
+    };
+
+    const result = await this.model.findSelect(sql, params)
+    .then((rows) => {
+      return (rows.length !== 0);
+    });
+    //sitting_confirmテーブルに日付があれば実行済みなので処理を抜ける
+    if(result) return result;
+
+    let tmpSql = `si.user_name`;
+    let commonSql = `
+      SELECT
+          ##tmpSql##
+        FROM seat_info si
+        LEFT JOIN (
+          SELECT
+            seat_id
+            ,seat_date
+          FROM reply_info
+          GROUP BY seat_id,seat_date
+        ) ri
+        ON si.seat_id = ri.seat_id
+        AND si.seat_date = ri.seat_date
+        WHERE si.seat_date = $seat_date
+        AND si.comment IS NULL
+        AND si.sitting_flg = 0
+        AND ri.seat_date IS NULL
+    `;
+
+    let deleteUserNames = [];
+    await this.model.findSelect(commonSql.replace("##tmpSql##", tmpSql), params)
+    .then((rows) => {
+      //以降の処理で削除される席のユーザ名を取得する
+      if(rows.length !== 0) {
+        deleteUserNames = rows.map(row => {
+          return row.user_name;
+        });
+      }
+    });
+
+    if(deleteUserNames.length !== 0){
+      tmpSql = `si.seat_id`;
+      //在席中でなくコメントの記載もない席を削除する
+      const sql2 = `
+        DELETE FROM seat_info
+        WHERE seat_date = $seat_date
+        AND seat_id IN (
+          ${commonSql.replace("##tmpSql##", tmpSql)}
+        )
+      `;
+      await this.model.findSelect(sql2, params);
+    }
+    //sitting_confirmに実行履歴を登録する
+    const sql3 = `
+        INSERT INTO sitting_confirm
+        (
+          seat_date
+          ,delete_user_names
+        ) VALUES (
+         $seat_date
+         ,$delete_user_names
+        )
+      `;
+
+    params["$delete_user_names"] = deleteUserNames.join(",");
+
+    return this.model.run2(sql3, params);
   }
 }
 

@@ -143,3 +143,21 @@ BkColor=$FFFFFF
 ModifiedDateTime=20240115091824
 Position="MAIN",900,50,288,129
 ZOrder=3
+
+[Entity]
+PName=sitting_confirm
+LName=在席確認
+Comment=
+TableInnerOption=
+TableOption=
+Page=Main
+Left=900
+Top=250
+Field="座席日時","seat_date","","NOT NULL",0,"","",$FFFFFFFF,""
+Field="削除ユーザ名","delete_user_names","",,,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20240903181305
+Position="Main",900,250,367,233
+ZOrder=4

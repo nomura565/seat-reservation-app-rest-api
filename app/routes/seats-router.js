@@ -72,4 +72,9 @@ router.post('/sittingFlgUpdate', (req, res) => {
   seatsController.sittingFlgUpdate(req, res);
 });
 
+// 在席確認
+router.post('/sittingConfirm', (req, res) => {
+  seatsController.sittingConfirm(req, res);
+});
+
 module.exports = router;

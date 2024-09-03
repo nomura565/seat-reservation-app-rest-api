@@ -537,11 +537,11 @@ class SeatsController {
       });
   }
   /**
- * 在席フラグ更新
- * 
- * @param req リクエスト
- * @param res レスポンス
- */
+   * 在席フラグ更新
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
   sittingFlgUpdate(req, res) {
     const logTarget = "sittingFlgUpdate";
     logStart(logTarget);
@@ -555,6 +555,28 @@ class SeatsController {
     const sitting_flg = req.body.sitting_flg;
 
     this.seatModel.sittingFlgUpdate(seat_id, seat_date, sitting_flg)
+      .then((result) => {
+        logEnd(logTarget);
+        return this.controller.createSuccess(res)(result);
+      })
+      .catch((error) => {
+        logError(logTarget, error);
+        return this.controller.editError(res)(error);
+      });
+  }
+  /**
+   * 在席確認
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+  sittingConfirm(req, res) {
+    const logTarget = "sittingConfirm";
+    logStart(logTarget);
+    loginfo(logTarget, "req.body.seat_date:" + req.body.seat_date);
+    const seat_date = req.body.seat_date;
+
+    this.seatModel.sittingConfirm(seat_date)
       .then((result) => {
         logEnd(logTarget);
         return this.controller.createSuccess(res)(result);

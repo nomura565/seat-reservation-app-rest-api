@@ -16,9 +16,11 @@ class SeatEntity {
    * @param facility_flg 施設フラグ
    * @param facility_id 施設ID
    * @param sitting_flg 在席フラグ
+   * @param reply_count リプライ数
+   * @param comment_reply_count コメント有無とリプライ数の計
    */
   constructor(seat_id, seat_name, lat, lng, tooltip_direction, seat_date
-    , user_name, image_data, comment, facility_flg, facility_id, sitting_flg) {
+    , user_name, image_data, comment, facility_flg, facility_id, sitting_flg, reply_count, comment_reply_count) {
     this.key = seat_id + "_" + seat_date;
     this.seat_id = seat_id;
     this.seat_name = seat_name;
@@ -33,6 +35,8 @@ class SeatEntity {
     this.facility_flg = facility_flg;
     this.facility_id = facility_id;
     this.sitting_flg = sitting_flg;
+    this.reply_count = reply_count;
+    this.comment_reply_count = comment_reply_count;
   }
 }
 
