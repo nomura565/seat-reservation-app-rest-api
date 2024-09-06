@@ -133,9 +133,10 @@ class SeatModel {
             row.comment,
             row.facility_flg,
             row.facility_id,
-            row.sitting_flg,
+            (row.seat_date === Const.PERMANENT_DATE) ? 1 : row.sitting_flg,
             row.reply_count,
-            row.comment_reply_count));
+            row.comment_reply_count,
+            true));
         }
 
         return seats;
@@ -765,6 +766,52 @@ class SeatModel {
     params["$delete_user_names"] = deleteUserNames.join(",");
 
     return this.model.run2(sql3, params);
+  }
+  /**
+   * 利用不可席一覧取得
+   * 
+   * @param from_date from_date
+   * @param to_date to_date
+   * @param floor_id floor_id
+   * @return Entity を Resolve する
+   */
+  getUnavailableSeatList(from_date, to_date, floor_id) {
+    const sql = `
+      SELECT
+        s.seat_id
+        ,COUNT(s.seat_id) AS count
+        , GROUP_CONCAT(seat_date) AS seat_date
+      FROM seat_info s
+      LEFT JOIN seat_master sm
+      ON s.seat_id = sm.seat_id
+      WHERE s.seat_date >= $from_date 
+        AND s.seat_date <= $to_date
+        AND sm.floor_id = $floor_id
+      GROUP BY s.seat_id
+      ORDER BY s.seat_id
+    `;
+    const params = {
+      $from_date: from_date,
+      $to_date: to_date,
+      $floor_id: floor_id
+    };
+
+    return this.model.findSelect(sql, params)
+      .then((rows) => {
+        const seats = [];
+
+        for (const row of rows) {
+          seats.push(new SeatEntity(
+            row.seat_id,
+            row.count,
+            "",
+            "",
+            "",
+            row.seat_date));
+        }
+
+        return seats;
+      });
   }
 }
 

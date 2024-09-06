@@ -586,6 +586,32 @@ class SeatsController {
         return this.controller.editError(res)(error);
       });
   }
+  /**
+   * 利用不可席一覧取得
+   * 
+   * @param req リクエスト
+   * @param res レスポンス
+   */
+  getUnavailableSeatList(req, res) {
+    const logTarget = "getUnavailableSeatList";
+    logStart(logTarget);
+    loginfo(logTarget, "req.body.from_date:" + req.body.from_date);
+    loginfo(logTarget, "req.body.to_date:" + req.body.to_date);
+    loginfo(logTarget, "req.body.floor_id:" + req.body.floor_id);
+    const from_date = req.body.from_date;
+    const to_date = req.body.to_date;
+    const floor_id = req.body.floor_id;
+
+    this.seatModel.getUnavailableSeatList(from_date, to_date, floor_id)
+      .then((result) => {
+        logEnd(logTarget);
+        return this.controller.findSuccess(res)(result);
+      })
+      .catch((error) => {
+        logError(logTarget, error);
+        return this.controller.findError(res)(error);
+      });
+  }
 }
 
 module.exports = SeatsController;

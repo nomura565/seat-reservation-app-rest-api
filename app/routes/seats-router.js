@@ -77,4 +77,9 @@ router.post('/sittingConfirm', (req, res) => {
   seatsController.sittingConfirm(req, res);
 });
 
+// 利用不可席一覧取得
+router.post('/getUnavailableSeatList', (req, res) => {
+  seatsController.getUnavailableSeatList(req, res);
+});
+
 module.exports = router;
